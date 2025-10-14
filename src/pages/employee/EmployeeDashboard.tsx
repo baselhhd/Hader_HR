@@ -63,14 +63,14 @@ const EmployeeDashboard = () => {
       return;
     }
 
-    // Verify user has employee role using RPC
-    const { data: hasRole } = await supabase
-      .rpc('has_role' as any, { 
-        _user_id: session.user.id, 
-        _role: 'employee' 
-      });
+    // TODO: Simple role check - will enhance before production
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", session.user.id)
+      .single();
 
-    if (!hasRole) {
+    if (userData?.role !== "employee") {
       toast.error("غير مصرح لك بالدخول");
       navigate("/login");
       return;

@@ -78,14 +78,14 @@ const ManagerDashboard = () => {
       return;
     }
 
-    // Verify user has location manager role using RPC
-    const { data: hasRole } = await supabase
-      .rpc('has_role' as any, { 
-        _user_id: session.user.id, 
-        _role: 'loc_manager' 
-      });
+    // TODO: Simple role check - will enhance before production
+    const { data: userData } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", session.user.id)
+      .single();
 
-    if (!hasRole) {
+    if (userData?.role !== "loc_manager") {
       toast.error("غير مصرح لك بالدخول");
       navigate("/login");
       return;

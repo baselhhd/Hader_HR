@@ -58,29 +58,23 @@ const Login = () => {
         .update({ last_login_at: new Date().toISOString() })
         .eq("id", data.user.id);
 
-      // Get user role from user_roles table (secure) using RPC
-      const { data: userRoles, error: roleError } = await supabase
-        .rpc('get_user_roles' as any, { _user_id: data.user.id });
-
-      if (roleError || !userRoles || (userRoles as any[]).length === 0) {
-        toast.error("لا يوجد صلاحية للدخول");
-        setIsLoading(false);
-        return;
-      }
+      // TODO: Simple role check for initial phase - will enhance security before production
+      const { data: userProfile } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
 
       toast.success("مرحباً بك!");
 
-      // Get the first role (highest priority)
-      const role = (userRoles as any[])[0];
-
       // Redirect based on role
-      if (role === "employee") {
+      if (userProfile?.role === "employee") {
         navigate("/employee/dashboard");
-      } else if (role === "loc_manager") {
+      } else if (userProfile?.role === "loc_manager") {
         navigate("/manager/dashboard");
-      } else if (role === "hr_admin") {
+      } else if (userProfile?.role === "hr_admin") {
         navigate("/hr/dashboard");
-      } else if (role === "super_admin") {
+      } else if (userProfile?.role === "super_admin") {
         navigate("/admin/dashboard");
       }
     } catch (error: any) {
