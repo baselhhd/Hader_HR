@@ -3,14 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, QrCode, Palette, Hash, MapPin, CheckCircle, Clock } from "lucide-react";
+import { ArrowRight, QrCode, Palette, Hash, MapPin, CheckCircle, Clock, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import QRScanner from "@/components/attendance/QRScanner";
 import ColorSelector from "@/components/attendance/ColorSelector";
 import CodeInput from "@/components/attendance/CodeInput";
 
 type CheckInMethod = "select" | "qr" | "color" | "code";
-type CheckInStep = "method" | "scanning" | "success" | "pending";
+type CheckInStep = "method" | "scanning" | "success" | "pending" | "checkout";
+type PageMode = "checkin" | "checkout";
 
 interface LocationInfo {
   id: string;
@@ -28,11 +29,36 @@ const CheckIn = () => {
   const [isInRange, setIsInRange] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [attendanceData, setAttendanceData] = useState<any>(null);
+  const [pageMode, setPageMode] = useState<PageMode>("checkin");
+  const [todayAttendance, setTodayAttendance] = useState<any>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   useEffect(() => {
+    checkTodayAttendance();
     loadLocation();
     getCurrentLocation();
   }, []);
+
+  const checkTodayAttendance = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const { data, error } = await supabase
+      .from("attendance_records")
+      .select("*")
+      .eq("employee_id", user.id)
+      .gte("check_in", today.toISOString())
+      .is("check_out", null)
+      .maybeSingle();
+
+    if (data && !error) {
+      setTodayAttendance(data);
+      setPageMode("checkout");
+    }
+  };
 
   const getCurrentLocation = () => {
     if ("geolocation" in navigator) {
@@ -177,6 +203,130 @@ const CheckIn = () => {
     }
   };
 
+  const handleCheckOut = async () => {
+    if (!todayAttendance) return;
+
+    setIsCheckingOut(true);
+    try {
+      const checkOutTime = new Date();
+      const checkInTime = new Date(todayAttendance.check_in);
+      
+      // Calculate work hours
+      const workMilliseconds = checkOutTime.getTime() - checkInTime.getTime();
+      const workHours = workMilliseconds / (1000 * 60 * 60);
+
+      const { data, error } = await supabase
+        .from("attendance_records")
+        .update({
+          check_out: checkOutTime.toISOString(),
+          work_hours: workHours,
+        })
+        .eq("id", todayAttendance.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setAttendanceData(data);
+      setStep("success");
+      toast.success("تم تسجيل خروجك بنجاح");
+    } catch (error) {
+      console.error("Check-out error:", error);
+      toast.error("حدث خطأ أثناء تسجيل الخروج");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
+  // Check-out page
+  if (pageMode === "checkout" && step === "method") {
+    const checkInTime = todayAttendance ? new Date(todayAttendance.check_in) : null;
+    const currentTime = new Date();
+    const workDuration = checkInTime
+      ? Math.floor((currentTime.getTime() - checkInTime.getTime()) / (1000 * 60))
+      : 0;
+    const hours = Math.floor(workDuration / 60);
+    const minutes = workDuration % 60;
+
+    return (
+      <div className="min-h-screen bg-background" dir="rtl">
+        <div className="bg-gradient-header text-white p-6 pb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/employee/dashboard")}
+              className="text-white hover:bg-white/20"
+            >
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+            <h1 className="text-2xl font-bold">تسجيل الخروج</h1>
+          </div>
+          <div className="flex items-center gap-2 text-white/90 text-sm">
+            <MapPin className="w-4 h-4" />
+            <span>{location?.name}</span>
+          </div>
+        </div>
+
+        <div className="p-4 space-y-4 -mt-4">
+          {/* Work Summary Card */}
+          <Card className="p-6 bg-gradient-to-br from-primary/10 to-success/10 border-2 border-primary/20">
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-bold mb-2">مدة العمل اليوم</h3>
+              <div className="text-5xl font-bold text-primary mb-2">
+                {hours}:{minutes.toString().padStart(2, "0")}
+              </div>
+              <p className="text-sm text-muted-foreground">ساعة ودقيقة</p>
+            </div>
+
+            <div className="space-y-3 pt-4 border-t">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">وقت الدخول</span>
+                <span className="font-bold">
+                  {checkInTime?.toLocaleTimeString("ar-SA", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">الوقت الحالي</span>
+                <span className="font-bold">
+                  {currentTime.toLocaleTimeString("ar-SA", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+            </div>
+          </Card>
+
+          {/* Check-out Button */}
+          <Button
+            onClick={handleCheckOut}
+            disabled={isCheckingOut}
+            className="w-full h-16 text-lg font-bold bg-gradient-to-r from-primary to-warning hover:opacity-90"
+          >
+            {isCheckingOut ? (
+              "جاري التسجيل..."
+            ) : (
+              <>
+                <LogOut className="ml-2 w-6 h-6" />
+                تسجيل الخروج الآن
+              </>
+            )}
+          </Button>
+
+          <Card className="p-4 bg-primary/5 border-primary/20">
+            <p className="text-sm text-center text-muted-foreground">
+              💡 يوم عمل موفق! لا تنسَ تسجيل خروجك
+            </p>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   if (step === "method") {
     return (
       <div className="min-h-screen bg-background" dir="rtl">
@@ -277,44 +427,87 @@ const CheckIn = () => {
   }
 
   if (step === "success") {
+    const isCheckOut = pageMode === "checkout";
+    
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4" dir="rtl">
         <div className="w-full max-w-md animate-scale-in">
           <div className="text-center mb-8">
             <div className="w-24 h-24 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse-slow">
-              <CheckCircle className="w-16 h-16 text-success" />
+              {isCheckOut ? (
+                <LogOut className="w-16 h-16 text-success" />
+              ) : (
+                <CheckCircle className="w-16 h-16 text-success" />
+              )}
             </div>
             <h2 className="text-3xl font-bold text-success mb-2">
-              ✅ تم تسجيل حضورك بنجاح!
+              {isCheckOut ? "✅ تم تسجيل خروجك بنجاح!" : "✅ تم تسجيل حضورك بنجاح!"}
             </h2>
-            <p className="text-muted-foreground">يوم عمل موفق!</p>
+            <p className="text-muted-foreground">
+              {isCheckOut ? "في أمان الله!" : "يوم عمل موفق!"}
+            </p>
           </div>
 
           <Card className="p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">الوقت</span>
-              <span className="font-bold">
-                {attendanceData && new Date(attendanceData.check_in).toLocaleTimeString("ar-SA", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">الموقع</span>
-              <span className="font-bold">{location?.name}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">الطريقة</span>
-              <span className="font-bold">
-                {method === "qr" ? "QR Code" : method === "color" ? "اللون" : "الكود"}
-              </span>
-            </div>
-            {attendanceData?.gps_distance && (
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">المسافة</span>
-                <span className="font-bold">{Math.round(attendanceData.gps_distance)} متر</span>
-              </div>
+            {isCheckOut ? (
+              <>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">وقت الدخول</span>
+                  <span className="font-bold">
+                    {attendanceData && new Date(attendanceData.check_in).toLocaleTimeString("ar-SA", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">وقت الخروج</span>
+                  <span className="font-bold">
+                    {attendanceData && new Date(attendanceData.check_out).toLocaleTimeString("ar-SA", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center border-t pt-4">
+                  <span className="text-muted-foreground">إجمالي ساعات العمل</span>
+                  <span className="font-bold text-primary text-lg">
+                    {attendanceData?.work_hours ? attendanceData.work_hours.toFixed(2) : "0"} ساعة
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">الموقع</span>
+                  <span className="font-bold">{location?.name}</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">الوقت</span>
+                  <span className="font-bold">
+                    {attendanceData && new Date(attendanceData.check_in).toLocaleTimeString("ar-SA", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">الموقع</span>
+                  <span className="font-bold">{location?.name}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">الطريقة</span>
+                  <span className="font-bold">
+                    {method === "qr" ? "QR Code" : method === "color" ? "اللون" : "الكود"}
+                  </span>
+                </div>
+                {attendanceData?.gps_distance && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">المسافة</span>
+                    <span className="font-bold">{Math.round(attendanceData.gps_distance)} متر</span>
+                  </div>
+                )}
+              </>
             )}
           </Card>
 
