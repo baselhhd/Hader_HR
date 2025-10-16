@@ -27,10 +27,10 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // First, get user by username
+      // First, get user by username to check if exists and get password
       const { data: userData, error: userError } = await supabase
         .from("users")
-        .select("email")
+        .select("id, username, password, role")
         .eq("username", username)
         .single();
 
@@ -40,42 +40,78 @@ const Login = () => {
         return;
       }
 
-      // Sign in with email
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: userData.email,
-        password: password,
-      });
+      // Check if user has a direct password (simple auth for testing)
+      if (userData.password) {
+        // Simple password check (for development/testing only)
+        if (userData.password !== password) {
+          toast.error("كلمة المرور غير صحيحة");
+          setIsLoading(false);
+          return;
+        }
 
-      if (error) {
-        toast.error("كلمة المرور غير صحيحة");
-        setIsLoading(false);
-        return;
-      }
+        // Create Session in Supabase Auth (important for Dashboard access)
+        const authEmail = `${username}@internal.hader.local`;
+        const { error: authError } = await supabase.auth.signInWithPassword({
+          email: authEmail,
+          password: password,
+        });
 
-      // Update last login
-      await supabase
-        .from("users")
-        .update({ last_login_at: new Date().toISOString() })
-        .eq("id", data.user.id);
+        if (authError) {
+          console.error("Auth session creation error:", authError);
+          // Continue anyway as fallback - password was correct in users table
+        }
 
-      // TODO: Simple role check for initial phase - will enhance security before production
-      const { data: userProfile } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", data.user.id)
-        .single();
+        // Update last login
+        await supabase
+          .from("users")
+          .update({ last_login_at: new Date().toISOString() })
+          .eq("id", userData.id);
 
-      toast.success("مرحباً بك!");
+        toast.success("مرحباً بك!");
 
-      // Redirect based on role
-      if (userProfile?.role === "employee") {
-        navigate("/employee/dashboard");
-      } else if (userProfile?.role === "loc_manager") {
-        navigate("/manager/dashboard");
-      } else if (userProfile?.role === "hr_admin") {
-        navigate("/hr/dashboard");
-      } else if (userProfile?.role === "super_admin") {
-        navigate("/admin/dashboard");
+        // Redirect based on role
+        if (userData.role === "employee") {
+          navigate("/employee/dashboard");
+        } else if (userData.role === "loc_manager") {
+          navigate("/manager/dashboard");
+        } else if (userData.role === "hr_admin") {
+          navigate("/hr/dashboard");
+        } else if (userData.role === "super_admin") {
+          navigate("/admin/dashboard");
+        }
+      } else {
+        // Fall back to Supabase Auth (for production)
+        const authEmail = `${username}@internal.hader.local`;
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: authEmail,
+          password: password,
+        });
+
+        if (error) {
+          toast.error("كلمة المرور غير صحيحة");
+          setIsLoading(false);
+          return;
+        }
+
+        // Update last login
+        await supabase
+          .from("users")
+          .update({ last_login_at: new Date().toISOString() })
+          .eq("id", data.user.id);
+
+        toast.success("مرحباً بك!");
+
+        // Redirect based on role
+        if (userData.role === "employee") {
+          navigate("/employee/dashboard");
+        } else if (userData.role === "loc_manager") {
+          navigate("/manager/dashboard");
+        } else if (userData.role === "hr_admin") {
+          navigate("/hr/dashboard");
+        } else if (userData.role === "super_admin") {
+          navigate("/admin/dashboard");
+        }
       }
     } catch (error: any) {
       console.error("Login error:", error);

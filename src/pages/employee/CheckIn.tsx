@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import QRScanner from "@/components/attendance/QRScanner";
 import ColorSelector from "@/components/attendance/ColorSelector";
 import CodeInput from "@/components/attendance/CodeInput";
+import { useUserCompanyData } from "@/hooks/useUserCompanyData";
 
 type CheckInMethod = "select" | "qr" | "color" | "code";
 type CheckInStep = "method" | "scanning" | "success" | "pending" | "checkout";
@@ -23,6 +24,7 @@ interface LocationInfo {
 
 const CheckIn = () => {
   const navigate = useNavigate();
+  const { companyId, branchId, locationId, locationName, locationLat, locationLng, locationRadius } = useUserCompanyData();
   const [step, setStep] = useState<CheckInStep>("method");
   const [method, setMethod] = useState<CheckInMethod>("select");
   const [location, setLocation] = useState<LocationInfo | null>(null);
@@ -33,9 +35,21 @@ const CheckIn = () => {
   const [todayAttendance, setTodayAttendance] = useState<any>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
+  // Update location when hook data is available
+  useEffect(() => {
+    if (locationId && locationName && locationLat && locationLng && locationRadius) {
+      setLocation({
+        id: locationId,
+        name: locationName,
+        lat: locationLat,
+        lng: locationLng,
+        gps_radius: locationRadius
+      });
+    }
+  }, [locationId, locationName, locationLat, locationLng, locationRadius]);
+
   useEffect(() => {
     checkTodayAttendance();
-    loadLocation();
     getCurrentLocation();
   }, []);
 
@@ -80,24 +94,6 @@ const CheckIn = () => {
     }
   };
 
-  const loadLocation = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data: empData } = await supabase
-      .from("employees")
-      .select(`
-        location_id,
-        locations:location_id (id, name, lat, lng, gps_radius)
-      `)
-      .eq("user_id", user.id)
-      .single();
-
-    if (empData?.locations) {
-      setLocation(empData.locations as any);
-    }
-  };
-
   const checkIfInRange = (coords: { lat: number; lng: number }) => {
     if (!location) return;
 
@@ -135,11 +131,16 @@ const CheckIn = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    if (!companyId || !branchId || !locationId) {
+      toast.error("لم يتم العثور على بيانات الشركة أو الموقع");
+      return;
+    }
+
     try {
       const checkInData: any = {
-        company_id: "00000000-0000-0000-0000-000000000001",
-        branch_id: "00000000-0000-0000-0000-000000000011",
-        location_id: location?.id,
+        company_id: companyId,
+        branch_id: branchId,
+        location_id: locationId,
         employee_id: user.id,
         check_in: new Date().toISOString(),
         method_used: method === "qr" ? "qr" as const : method === "color" ? "color" as const : "code" as const,

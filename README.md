@@ -1,73 +1,263 @@
-# Welcome to your Lovable project
+# 🏢 Hader HR - نظام إدارة الموارد البشرية
 
-## Project info
+<div align="center">
 
-**URL**: https://lovable.dev/projects/c107fe0c-b7ca-4ce1-9fe4-2e377e389ffc
+![React](https://img.shields.io/badge/React-18-blue.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)
+![Vite](https://img.shields.io/badge/Vite-5-purple.svg)
+![Supabase](https://img.shields.io/badge/Supabase-Latest-green.svg)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-teal.svg)
 
-## How can I edit this code?
+**نظام شامل لإدارة الموارد البشرية والحضور والانصراف**
 
-There are several ways of editing your application.
+[التوثيق الكامل](./PROJECT_DOCUMENTATION.md) • [خطة المشروع](./project_plan.md)
 
-**Use Lovable**
+</div>
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/c107fe0c-b7ca-4ce1-9fe4-2e377e389ffc) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## ✨ المميزات الرئيسية
 
-**Use your preferred IDE**
+### 🎯 نظام حضور متعدد الطرق
+- ✅ تسجيل بواسطة **رمز QR**
+- ✅ تسجيل بواسطة **كود اللون**
+- ✅ تسجيل بواسطة **الكود الرقمي**
+- ✅ تحقق من الموقع بـ **GPS**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 👥 إدارة متعددة المستويات
+- 🏢 إدارة **الشركات**
+- 🏪 إدارة **الفروع**
+- 📍 إدارة **المواقع**
+- 👤 إدارة **المستخدمين**
+- ⏰ إدارة **الورديات**
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 📊 تقارير شاملة
+- 📈 تقرير **الحضور والانصراف**
+- 🏖️ تقرير **الإجازات**
+- 🎯 تقرير **الأداء**
+- 🏛️ تقرير **الأقسام**
+- 💾 تصدير إلى **CSV** مع دعم العربية
 
-Follow these steps:
+### ⚙️ إعدادات مرنة
+- 🔧 إعدادات **النظام العامة**
+- 🕐 إعدادات **ساعات العمل**
+- 🔐 إعدادات **المصادقة**
+- 🌍 إعدادات **GPS**
+- 🔔 إعدادات **الإشعارات**
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🚀 البدء السريع
 
-# Step 3: Install the necessary dependencies.
-npm i
+### المتطلبات الأساسية
+```bash
+Node.js >= 18.0.0
+npm >= 9.0.0
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### التثبيت
+
+1. **استنساخ المشروع**
+```bash
+git clone <repository-url>
+cd Hader_HR
+```
+
+2. **تثبيت الاعتماديات**
+```bash
+npm install
+```
+
+3. **إعداد البيئة**
+   - أنشئ ملف `.env` في الجذر
+   - أضف متغيرات Supabase:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. **تشغيل المشروع**
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+5. **فتح المتصفح**
+```
+http://localhost:8080
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 📁 هيكل المشروع
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+Hader_HR/
+├── src/
+│   ├── pages/
+│   │   ├── employee/        # صفحات الموظف
+│   │   ├── manager/         # صفحات مدير الموقع
+│   │   ├── hr/             # صفحات الموارد البشرية
+│   │   └── admin/          # صفحات المدير العام
+│   ├── components/
+│   │   └── ui/             # مكونات UI
+│   ├── integrations/
+│   │   └── supabase/       # تكامل Supabase
+│   └── App.tsx             # التطبيق الرئيسي
+├── PROJECT_DOCUMENTATION.md # التوثيق الشامل
+├── project_plan.md         # خطة المشروع
+└── README.md              # هذا الملف
+```
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 👤 أدوار المستخدمين
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+| الدور | المسار | الوصف |
+|------|-------|-------|
+| 👔 **مدير عام** | `/admin/dashboard` | صلاحيات كاملة على النظام |
+| 👨‍💼 **موارد بشرية** | `/hr/dashboard` | إدارة الموظفين والتقارير |
+| 📍 **مدير موقع** | `/manager/dashboard` | إدارة موقع محدد |
+| 👨‍💻 **موظف** | `/employee/dashboard` | تسجيل الحضور وطلبات الإجازات |
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/c107fe0c-b7ca-4ce1-9fe4-2e377e389ffc) and click on Share -> Publish.
+## 🛠️ التقنيات المستخدمة
 
-## Can I connect a custom domain to my Lovable project?
+### Frontend
+- **React 18** - مكتبة UI
+- **TypeScript** - للكتابة الآمنة
+- **Vite** - أداة البناء
+- **Tailwind CSS** - تنسيق الواجهة
+- **shadcn/ui** - مكونات UI
 
-Yes, you can!
+### Backend
+- **Supabase** - قاعدة البيانات والمصادقة
+- **PostgreSQL** - قاعدة البيانات
+- **Row Level Security** - الأمان
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### المكتبات الإضافية
+- **Lucide React** - الأيقونات
+- **Sonner** - الإشعارات
+- **React Router** - التوجيه
+- **TanStack Query** - إدارة البيانات
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## 📖 الصفحات الرئيسية
+
+### للموظفين
+- ✅ لوحة التحكم
+- ⏰ تسجيل الحضور
+- 📋 سجل الحضور
+- 🏖️ طلبات الإجازات
+- 👤 الملف الشخصي
+
+### للموارد البشرية
+- 📊 لوحة التحكم
+- 👥 إدارة الموظفين
+- 📝 إدارة طلبات الإجازات
+- ⏱️ سجلات الحضور
+- 📈 التقارير والإحصائيات
+
+### للمدير العام
+- 🎛️ لوحة التحكم
+- 🏢 إدارة الشركات
+- 🏪 إدارة الفروع
+- 📍 إدارة المواقع
+- ⏰ إدارة الورديات
+- 👤 إدارة المستخدمين
+- ⚙️ إعدادات النظام
+
+---
+
+## 📊 قاعدة البيانات
+
+### الجداول الرئيسية
+
+```
+users              # المستخدمون
+├── companies      # الشركات
+│   └── branches   # الفروع
+│       └── locations  # المواقع
+├── employees      # بيانات الموظفين
+├── shifts         # الورديات
+├── attendance_records  # سجلات الحضور
+└── leave_requests # طلبات الإجازات
+```
+
+---
+
+## 🔐 الأمان
+
+- ✅ مصادقة آمنة عبر Supabase
+- ✅ Row Level Security (RLS)
+- ✅ التحقق من الأدوار
+- ✅ تشفير كلمات المرور
+- ✅ حماية المسارات
+
+---
+
+## 🧪 الاختبار
+
+### تشغيل الاختبارات
+```bash
+npm run test
+```
+
+### بناء للإنتاج
+```bash
+npm run build
+```
+
+### معاينة البناء
+```bash
+npm run preview
+```
+
+---
+
+## 📝 التوثيق الكامل
+
+للحصول على التوثيق الكامل والمفصل، راجع:
+- 📘 [التوثيق الشامل](./PROJECT_DOCUMENTATION.md)
+- 📋 [خطة المشروع](./project_plan.md)
+
+---
+
+## 🗺️ خريطة الطريق
+
+### ✅ الإصدار 1.0 (مكتمل)
+- [x] نظام الحضور الأساسي
+- [x] إدارة المستخدمين
+- [x] التقارير الأساسية
+- [x] إعدادات النظام
+
+### 🔄 الإصدار 1.1 (مخطط)
+- [ ] Dashboard Charts
+- [ ] نظام الإشعارات
+- [ ] تصدير Excel
+- [ ] البحث المتقدم
+
+### 🔮 الإصدار 2.0 (مستقبلي)
+- [ ] تطبيق الموبايل
+- [ ] الرسائل الداخلية
+- [ ] تقارير مخصصة
+- [ ] تكامل API خارجي
+
+---
+
+## 📜 الترخيص
+
+هذا المشروع مرخص تحت رخصة MIT.
+
+---
+
+<div align="center">
+
+**صُنع بـ ❤️ في السعودية**
+
+© 2025 Hader HR. جميع الحقوق محفوظة.
+
+[التوثيق](./PROJECT_DOCUMENTATION.md) • [خطة المشروع](./project_plan.md)
+
+</div>

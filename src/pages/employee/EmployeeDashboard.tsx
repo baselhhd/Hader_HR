@@ -11,6 +11,7 @@ import {
   CheckCircle,
   AlertCircle,
   LogOut,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -256,7 +257,14 @@ const EmployeeDashboard = () => {
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-4 gap-3">
+          <Card
+            className="p-4 text-center hover-scale cursor-pointer"
+            onClick={() => navigate("/employee/profile")}
+          >
+            <User className="w-8 h-8 text-primary mx-auto mb-2" />
+            <p className="text-sm font-medium">الملف الشخصي</p>
+          </Card>
           <Card
             className="p-4 text-center hover-scale cursor-pointer"
             onClick={() => navigate("/employee/leave-request")}
