@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { QRCodeCanvas } from "qrcode.react";
+import { getSession, clearSession } from "@/lib/auth";
 
 interface ManagerData {
   location_id: string;
@@ -71,28 +72,23 @@ const ManagerDashboard = () => {
   }, [location, activeMethod]);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    // Check for local session first
+    const session = getSession();
+
     if (!session) {
       navigate("/login");
       return;
     }
 
-    // TODO: Simple role check - will enhance before production
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", session.user.id)
-      .single();
-
-    if (userData?.role !== "loc_manager") {
+    // Check if user has loc_manager role
+    if (session.role !== "loc_manager") {
       toast.error("غير مصرح لك بالدخول");
       navigate("/login");
       return;
     }
 
-    setUser(session.user);
-    await loadData(session.user.id);
+    setUser(session);
+    await loadData(session.userId);
   };
 
   const loadData = async (userId: string) => {
@@ -218,7 +214,16 @@ const ManagerDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    // Clear local session
+    clearSession();
+
+    // Try to sign out from Supabase Auth (but don't fail if it doesn't work)
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.log("Supabase auth signout skipped:", error);
+    }
+
     navigate("/login");
     toast.success("تم تسجيل الخروج بنجاح");
   };

@@ -1,0 +1,12 @@
+{
+  "companies": [],
+  "branches": [],
+  "locations": [],
+  "shifts": [],
+  "users": [],
+  "employees": [],
+  "location_managers": [],
+  "attendance": null,
+  "leave_requests": null,
+  "leave_balances": null
+}

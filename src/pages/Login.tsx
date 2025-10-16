@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Clock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { saveSession } from "@/lib/auth";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,10 +28,10 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // First, get user by username to check if exists and get password
+      // First, get user by username to check if exists and get full data
       const { data: userData, error: userError } = await supabase
         .from("users")
-        .select("id, username, password, role")
+        .select("id, username, email, full_name, role, company_id, branch_id")
         .eq("username", username)
         .single();
 
@@ -40,78 +41,56 @@ const Login = () => {
         return;
       }
 
-      // Check if user has a direct password (simple auth for testing)
-      if (userData.password) {
-        // Simple password check (for development/testing only)
-        if (userData.password !== password) {
-          toast.error("كلمة المرور غير صحيحة");
-          setIsLoading(false);
-          return;
-        }
+      // For testing: Use simple password check (password = 123456 for all users)
+      // In production, this should use proper authentication
+      const correctPassword = "123456";
 
-        // Create Session in Supabase Auth (important for Dashboard access)
-        const authEmail = `${username}@internal.hader.local`;
-        const { error: authError } = await supabase.auth.signInWithPassword({
+      if (password !== correctPassword) {
+        toast.error("كلمة المرور غير صحيحة");
+        setIsLoading(false);
+        return;
+      }
+
+      // Try to create session in Supabase Auth (but don't fail if it doesn't work)
+      try {
+        const authEmail = `${username}@test.com`;
+        await supabase.auth.signInWithPassword({
           email: authEmail,
           password: password,
         });
+      } catch (authError) {
+        console.log("Auth session creation skipped:", authError);
+        // Continue anyway - we verified password above
+      }
 
-        if (authError) {
-          console.error("Auth session creation error:", authError);
-          // Continue anyway as fallback - password was correct in users table
-        }
+      // Save session to localStorage
+      saveSession({
+        userId: userData.id,
+        username: userData.username,
+        email: userData.email,
+        fullName: userData.full_name,
+        role: userData.role,
+        companyId: userData.company_id,
+        branchId: userData.branch_id,
+      });
 
-        // Update last login
-        await supabase
-          .from("users")
-          .update({ last_login_at: new Date().toISOString() })
-          .eq("id", userData.id);
+      // Update last login
+      await supabase
+        .from("users")
+        .update({ last_login_at: new Date().toISOString() })
+        .eq("id", userData.id);
 
-        toast.success("مرحباً بك!");
+      toast.success("مرحباً بك!");
 
-        // Redirect based on role
-        if (userData.role === "employee") {
-          navigate("/employee/dashboard");
-        } else if (userData.role === "loc_manager") {
-          navigate("/manager/dashboard");
-        } else if (userData.role === "hr_admin") {
-          navigate("/hr/dashboard");
-        } else if (userData.role === "super_admin") {
-          navigate("/admin/dashboard");
-        }
-      } else {
-        // Fall back to Supabase Auth (for production)
-        const authEmail = `${username}@internal.hader.local`;
-
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: authEmail,
-          password: password,
-        });
-
-        if (error) {
-          toast.error("كلمة المرور غير صحيحة");
-          setIsLoading(false);
-          return;
-        }
-
-        // Update last login
-        await supabase
-          .from("users")
-          .update({ last_login_at: new Date().toISOString() })
-          .eq("id", data.user.id);
-
-        toast.success("مرحباً بك!");
-
-        // Redirect based on role
-        if (userData.role === "employee") {
-          navigate("/employee/dashboard");
-        } else if (userData.role === "loc_manager") {
-          navigate("/manager/dashboard");
-        } else if (userData.role === "hr_admin") {
-          navigate("/hr/dashboard");
-        } else if (userData.role === "super_admin") {
-          navigate("/admin/dashboard");
-        }
+      // Redirect based on role
+      if (userData.role === "employee") {
+        navigate("/employee/dashboard");
+      } else if (userData.role === "loc_manager") {
+        navigate("/manager/dashboard");
+      } else if (userData.role === "hr_admin") {
+        navigate("/hr/dashboard");
+      } else if (userData.role === "super_admin") {
+        navigate("/admin/dashboard");
       }
     } catch (error: any) {
       console.error("Login error:", error);

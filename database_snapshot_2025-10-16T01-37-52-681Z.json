@@ -1,0 +1,167 @@
+{
+  "companies": [],
+  "branches": [],
+  "locations": [],
+  "shifts": [],
+  "users": [
+    {
+      "id": "785d8582-67c4-4906-a20a-603ba428fadb",
+      "company_id": "6dc6fb0f-1194-4814-833a-c696994c0c5c",
+      "branch_id": "39602a01-f6ee-4bfa-9fa0-44658067b000",
+      "username": "ahmed_ali",
+      "email": null,
+      "phone": "+966501234567",
+      "full_name": "ahmed_ali@internal.hader.local",
+      "avatar_url": null,
+      "role": "employee",
+      "notification_preferences": {
+        "email": true,
+        "whatsapp": true
+      },
+      "is_active": true,
+      "last_login_at": "2025-10-14T23:34:57.967+00:00",
+      "created_at": "2025-10-14T23:04:05.107648+00:00",
+      "updated_at": "2025-10-14T23:34:59.392521+00:00",
+      "password": null,
+      "company": null,
+      "branch": null
+    },
+    {
+      "id": "72c8c5c3-37ae-4a1b-8c92-807339121e02",
+      "company_id": null,
+      "branch_id": null,
+      "username": "khaled_manager",
+      "email": "khaled@company.com",
+      "phone": "+966507654321",
+      "full_name": "khaled_manager@internal.hader.local",
+      "avatar_url": null,
+      "role": "loc_manager",
+      "notification_preferences": {
+        "email": true,
+        "whatsapp": true
+      },
+      "is_active": true,
+      "last_login_at": null,
+      "created_at": "2025-10-14T23:04:06.445123+00:00",
+      "updated_at": "2025-10-14T23:04:41.544706+00:00",
+      "password": null,
+      "company": null,
+      "branch": null
+    },
+    {
+      "id": "abec6ad2-505a-444d-8c37-496a9f8729a4",
+      "company_id": null,
+      "branch_id": null,
+      "username": "fatima_hr",
+      "email": null,
+      "phone": null,
+      "full_name": "فاطمه",
+      "avatar_url": null,
+      "role": "super_admin",
+      "notification_preferences": {
+        "email": true,
+        "whatsapp": true
+      },
+      "is_active": true,
+      "last_login_at": "2025-10-16T01:21:15.834+00:00",
+      "created_at": "2025-10-14T23:04:07.504602+00:00",
+      "updated_at": "2025-10-16T01:21:17.783978+00:00",
+      "password": null,
+      "company": null,
+      "branch": null
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000004",
+      "company_id": "6dc6fb0f-1194-4814-833a-c696994c0c5c",
+      "branch_id": "39602a01-f6ee-4bfa-9fa0-44658067b000",
+      "username": "employee",
+      "email": "employee@internal.hader.local",
+      "phone": "+966504444444",
+      "full_name": "موظف تجريبي",
+      "avatar_url": null,
+      "role": "employee",
+      "notification_preferences": {
+        "email": true,
+        "whatsapp": true
+      },
+      "is_active": true,
+      "last_login_at": null,
+      "created_at": "2025-10-15T12:30:11.289871+00:00",
+      "updated_at": "2025-10-15T12:31:24.751525+00:00",
+      "password": "Employee@123",
+      "company": null,
+      "branch": null
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000002",
+      "company_id": "6dc6fb0f-1194-4814-833a-c696994c0c5c",
+      "branch_id": "39602a01-f6ee-4bfa-9fa0-44658067b000",
+      "username": "hr",
+      "email": "hr@internal.hader.local",
+      "phone": "+966502222222",
+      "full_name": "موظف الموارد البشرية",
+      "avatar_url": null,
+      "role": "hr_admin",
+      "notification_preferences": {
+        "email": true,
+        "whatsapp": true
+      },
+      "is_active": true,
+      "last_login_at": "2025-10-16T00:54:54.385+00:00",
+      "created_at": "2025-10-15T12:30:11.289871+00:00",
+      "updated_at": "2025-10-16T00:54:56.348399+00:00",
+      "password": "Hr@123",
+      "company": null,
+      "branch": null
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000001",
+      "company_id": "6dc6fb0f-1194-4814-833a-c696994c0c5c",
+      "branch_id": "39602a01-f6ee-4bfa-9fa0-44658067b000",
+      "username": "admin",
+      "email": "admin@internal.hader.local",
+      "phone": "+966501111111",
+      "full_name": "مدير النظام",
+      "avatar_url": null,
+      "role": "super_admin",
+      "notification_preferences": {
+        "email": true,
+        "whatsapp": true
+      },
+      "is_active": true,
+      "last_login_at": "2025-10-16T00:54:31.935+00:00",
+      "created_at": "2025-10-15T12:30:11.289871+00:00",
+      "updated_at": "2025-10-16T00:54:33.764995+00:00",
+      "password": "Admin@123",
+      "company": null,
+      "branch": null
+    },
+    {
+      "id": "10000000-0000-0000-0000-000000000003",
+      "company_id": "6dc6fb0f-1194-4814-833a-c696994c0c5c",
+      "branch_id": "39602a01-f6ee-4bfa-9fa0-44658067b000",
+      "username": "manager",
+      "email": "manager@internal.hader.local",
+      "phone": "+966503333333",
+      "full_name": "مدير الموقع",
+      "avatar_url": null,
+      "role": "loc_manager",
+      "notification_preferences": {
+        "email": true,
+        "whatsapp": true
+      },
+      "is_active": true,
+      "last_login_at": "2025-10-16T00:55:47.805+00:00",
+      "created_at": "2025-10-15T12:30:11.289871+00:00",
+      "updated_at": "2025-10-16T00:55:49.680471+00:00",
+      "password": "Manager@123",
+      "company": null,
+      "branch": null
+    }
+  ],
+  "employees": [],
+  "location_managers": [],
+  "attendance": null,
+  "leave_requests": null,
+  "leave_balances": null
+}

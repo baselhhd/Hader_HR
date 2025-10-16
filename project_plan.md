@@ -42,8 +42,7 @@ Hader HR - Complete Development Guide (Part 1)
   - PostgreSQL Database
   - Authentication (Supabase Auth)
   - Storage (for selfie images)
-  - Row Level Security (RLS) for permissions
-  - Realtime subscriptions
+  - أريد بناء تطبيق باستخدام Supabase بدون استخدام Row Level Security (RLS).
 - **File Storage**: Supabase Storage (for avatars and selfies)
 
 ### Design System

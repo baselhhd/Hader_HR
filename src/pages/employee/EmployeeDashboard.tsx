@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
+import { getSession, clearSession } from "@/lib/auth";
 
 interface UserProfile {
   full_name: string;
@@ -57,28 +58,23 @@ const EmployeeDashboard = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    // Check for local session first
+    const session = getSession();
+
     if (!session) {
       navigate("/login");
       return;
     }
 
-    // TODO: Simple role check - will enhance before production
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", session.user.id)
-      .single();
-
-    if (userData?.role !== "employee") {
+    // Check if user has employee role
+    if (session.role !== "employee") {
       toast.error("غير مصرح لك بالدخول");
       navigate("/login");
       return;
     }
 
-    setUser(session.user);
-    await loadData(session.user.id);
+    setUser(session);
+    await loadData(session.userId);
   };
 
   const loadData = async (userId: string) => {
@@ -148,7 +144,16 @@ const EmployeeDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    // Clear local session
+    clearSession();
+
+    // Try to sign out from Supabase Auth (but don't fail if it doesn't work)
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.log("Supabase auth signout skipped:", error);
+    }
+
     navigate("/login");
     toast.success("تم تسجيل الخروج بنجاح");
   };
