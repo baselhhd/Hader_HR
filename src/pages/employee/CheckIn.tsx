@@ -9,6 +9,7 @@ import QRScanner from "@/components/attendance/QRScanner";
 import ColorSelector from "@/components/attendance/ColorSelector";
 import CodeInput from "@/components/attendance/CodeInput";
 import { useUserCompanyData } from "@/hooks/useUserCompanyData";
+import { getSession } from "@/lib/auth";
 
 type CheckInMethod = "select" | "qr" | "color" | "code";
 type CheckInStep = "method" | "scanning" | "success" | "pending" | "checkout";
@@ -54,8 +55,8 @@ const CheckIn = () => {
   }, []);
 
   const checkTodayAttendance = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const session = getSession();
+    if (!session) return;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -63,7 +64,7 @@ const CheckIn = () => {
     const { data, error } = await supabase
       .from("attendance_records")
       .select("*")
-      .eq("employee_id", user.id)
+      .eq("employee_id", session.userId)
       .gte("check_in", today.toISOString())
       .is("check_out", null)
       .maybeSingle();
@@ -128,8 +129,8 @@ const CheckIn = () => {
   };
 
   const handleCheckInComplete = async (methodData: any) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const session = getSession();
+    if (!session) return;
 
     if (!companyId || !branchId || !locationId) {
       toast.error("لم يتم العثور على بيانات الشركة أو الموقع");
@@ -141,7 +142,7 @@ const CheckIn = () => {
         company_id: companyId,
         branch_id: branchId,
         location_id: locationId,
-        employee_id: user.id,
+        employee_id: session.userId,
         check_in: new Date().toISOString(),
         method_used: method === "qr" ? "qr" as const : method === "color" ? "color" as const : "code" as const,
         method_data: methodData,
@@ -192,7 +193,7 @@ const CheckIn = () => {
       if (suspicionScore >= 50) {
         await supabase.from("verification_requests").insert({
           attendance_record_id: attendance.id,
-          employee_id: user.id,
+          employee_id: session.userId,
           suspicious_score: suspicionScore,
           suspicious_reasons: reasons,
           expires_at: new Date(Date.now() + 20 * 60 * 1000).toISOString(),

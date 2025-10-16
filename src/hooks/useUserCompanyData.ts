@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getSession } from '@/lib/auth';
 
 interface UserCompanyData {
   companyId: string | null;
@@ -35,8 +36,9 @@ export function useUserCompanyData(): UserCompanyData {
   useEffect(() => {
     async function fetchData() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
+        // Get user from local session
+        const session = getSession();
+        if (!session) {
           throw new Error('No authenticated user');
         }
 
@@ -44,7 +46,7 @@ export function useUserCompanyData(): UserCompanyData {
         const { data: userProfile, error: userError } = await supabase
           .from('users')
           .select('company_id, branch_id')
-          .eq('id', user.id)
+          .eq('id', session.userId)
           .single();
 
         if (userError) throw userError;
@@ -63,7 +65,7 @@ export function useUserCompanyData(): UserCompanyData {
               gps_radius
             )
           `)
-          .eq('user_id', user.id)
+          .eq('user_id', session.userId)
           .maybeSingle();
 
         if (employeeError && employeeError.code !== 'PGRST116') {
