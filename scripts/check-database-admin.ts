@@ -3,13 +3,7 @@
  * Run with: npx tsx scripts/check-database-admin.ts
  */
 
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../src/integrations/supabase/types';
-
-const SUPABASE_URL = "https://ccqfviqftfbywlobyjev.supabase.co";
-const SUPABASE_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjcWZ2aXFmdGZieXdsb2J5amV2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQzOTk4MSwiZXhwIjoyMDc2MDE1OTgxfQ.2x5uOBOxI8K6NTQtl3BT9N6zpBdyI1YhhDKErEZhrsA";
-
-const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+import { supabaseAdmin as supabase } from './_env-config';
 
 async function checkDatabase() {
   console.log('🔍 Checking Supabase Database (Admin)...\n');

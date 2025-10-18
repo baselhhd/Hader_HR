@@ -13,7 +13,10 @@
       "Bash(npx:*)",
       "Bash(npm install dotenv)",
       "Bash(git add .claude/mcp.json .env.example .gitignore check_manager2.cjs test_mcp_access.js check_all_tables_raw.js check_attendance_tables.cjs check_database_schema.js fetch_all_data.js fetch_users.js package.json package-lock.json)",
-      "Bash(git add src/integrations/supabase/client.ts src/App.tsx src/pages/employee/CheckIn.tsx src/pages/manager/ManagerDashboard.tsx .claude/settings.local.json)"
+      "Bash(git add src/integrations/supabase/client.ts src/App.tsx src/pages/employee/CheckIn.tsx src/pages/manager/ManagerDashboard.tsx .claude/settings.local.json)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Update environment configuration and migrate to dotenv\n\nMajor Changes:\n- Restructure .env file with organized sections\n- Add VITE_SUPABASE_SERVICE_ROLE_KEY for server-side operations\n- Migrate all files to use environment variables\n- Install dotenv package for Node.js scripts\n\nUpdated Files:\n- src/integrations/supabase/client.ts: Use import.meta.env\n- All Node.js scripts: Add dotenv support and env variable validation\n- .gitignore: Add .env protection\n- package.json: Add dotenv dependency\n\nNew Files:\n- .env.example: Template for environment variables\n- .claude/mcp.json: Supabase MCP server configuration\n- check_manager2.cjs: Manager verification script\n- test_mcp_access.js: MCP access testing script\n\nSecurity: Credentials now managed via environment variables\nEOF\n)\")",
+      "Bash(git push origin main)",
+      "Bash(dir scripts*.ts /b)"
     ],
     "deny": [],
     "ask": []

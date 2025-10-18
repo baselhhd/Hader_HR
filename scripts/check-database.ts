@@ -3,13 +3,7 @@
  * Run with: npx tsx scripts/check-database.ts
  */
 
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../src/integrations/supabase/types';
-
-const SUPABASE_URL = "https://ccqfviqftfbywlobyjev.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjcWZ2aXFmdGZieXdsb2J5amV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0Mzk5ODEsImV4cCI6MjA3NjAxNTk4MX0.tjSaWUXor9GZVza1bSygNfGl0DVIRB9p5LKscSyBC9U";
-
-const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY);
+import { supabaseAnon as supabase } from './_env-config';
 
 async function checkDatabase() {
   console.log('🔍 Checking Supabase Database Connection...\n');

@@ -3,11 +3,7 @@
  * Run with: npx tsx scripts/seed-database.ts
  */
 
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '../src/integrations/supabase/types';
-
-const SUPABASE_URL = "https://ccqfviqftfbywlobyjev.supabase.co";
-const SUPABASE_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjcWZ2aXFmdGZieXdsb2J5amV2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQzOTk4MSwiZXhwIjoyMDc2MDE1OTgxfQ.2x5uOBOxI8K6NTQtl3BT9N6zpBdyI1YhhDKErEZhrsA";
+import { supabaseAdmin as supabase } from './_env-config';
 
 /**
  * توليد email داخلي من username
@@ -16,14 +12,6 @@ function generateInternalEmail(username: string): string {
   const cleanUsername = username.toLowerCase().trim().replace(/\s+/g, '_');
   return `${cleanUsername}@internal.hader.local`;
 }
-
-// Use service role key to bypass RLS
-const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
 
 async function seedDatabase() {
   console.log('🌱 Starting database seeding...\n');

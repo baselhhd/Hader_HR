@@ -3,14 +3,9 @@
  * Run with: npx tsx scripts/apply-rls-fix.ts
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin as supabase, SUPABASE_URL, SUPABASE_SERVICE_KEY } from './_env-config';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-
-const SUPABASE_URL = "https://ccqfviqftfbywlobyjev.supabase.co";
-const SUPABASE_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjcWZ2aXFmdGZieXdsb2J5amV2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDQzOTk4MSwiZXhwIjoyMDc2MDE1OTgxfQ.2x5uOBOxI8K6NTQtl3BT9N6zpBdyI1YhhDKErEZhrsA";
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 async function applyRLSFix() {
   console.log('🔧 Applying RLS Policy Fixes...\n');
