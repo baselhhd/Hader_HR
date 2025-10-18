@@ -93,8 +93,10 @@ const ManagerDashboard = () => {
 
   const loadData = async (userId: string) => {
     try {
+      console.log("🔍 Loading location data for user:", userId);
+
       // Get manager's location
-      const { data: locationData } = await supabase
+      const { data: locationData, error: locationError } = await supabase
         .from("location_managers")
         .select(`
           location_id,
@@ -103,11 +105,21 @@ const ManagerDashboard = () => {
         .eq("user_id", userId)
         .single();
 
+      if (locationError) {
+        console.error("❌ Error fetching location_managers:", locationError);
+        toast.error("لم يتم العثور على موقع لهذا المدير");
+        return;
+      }
+
       if (locationData?.locations) {
+        console.log("✅ Location loaded:", locationData.locations);
         setLocation(locationData.locations);
         await loadTodayStats(locationData.locations.id);
         await loadRecentAttendance(locationData.locations.id);
         await loadSuspiciousCount(locationData.locations.id);
+      } else {
+        console.error("❌ No location data found for manager");
+        toast.error("لم يتم تعيين موقع لهذا المدير");
       }
     } catch (error) {
       console.error("Error loading data:", error);
@@ -180,37 +192,70 @@ const ManagerDashboard = () => {
   };
 
   const generateQRCode = async () => {
+    if (!location?.id) {
+      console.error("Cannot generate QR code: location not loaded");
+      return;
+    }
+
     const code = crypto.randomUUID();
     setCurrentCode(code);
-    
-    await supabase.from("qr_codes").insert({
+
+    const { error } = await supabase.from("qr_codes").insert({
       location_id: location.id,
       code_data: code,
       expires_at: new Date(Date.now() + 120000).toISOString(),
     });
+
+    if (error) {
+      console.error("Error generating QR code:", error);
+    } else {
+      console.log("✅ QR Code generated:", code.substring(0, 20) + "...");
+    }
   };
 
   const generateColorCode = async () => {
+    if (!location?.id) {
+      console.error("Cannot generate color code: location not loaded");
+      return;
+    }
+
     const colors = ["red", "green", "blue", "yellow"];
     const color = colors[Math.floor(Math.random() * colors.length)];
     setCurrentColor(color);
 
-    await supabase.from("color_codes").insert({
+    const { error } = await supabase.from("color_codes").insert({
       location_id: location.id,
       current_color: color,
       expires_at: new Date(Date.now() + 20000).toISOString(),
     });
+
+    if (error) {
+      console.error("Error generating color code:", error);
+    } else {
+      console.log("✅ Color Code generated:", color);
+    }
   };
 
   const generateNumericCode = async () => {
+    if (!location?.id) {
+      console.error("Cannot generate numeric code: location not loaded");
+      return;
+    }
+
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     setCurrentNumericCode(code);
 
-    await supabase.from("numeric_codes").insert({
+    const { error } = await supabase.from("numeric_codes").insert({
       location_id: location.id,
       code: code,
       expires_at: new Date(Date.now() + 300000).toISOString(),
     });
+
+    if (error) {
+      console.error("Error generating numeric code:", error);
+    } else {
+      console.log("✅ Numeric Code generated:", code);
+    }
   };
 
   const handleLogout = async () => {

@@ -9,7 +9,11 @@
       "Bash(node fetch_all_data.js:*)",
       "Bash(node check_all_tables_raw.js:*)",
       "Bash(npm run dev:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx:*)",
+      "Bash(npm install dotenv)",
+      "Bash(git add .claude/mcp.json .env.example .gitignore check_manager2.cjs test_mcp_access.js check_all_tables_raw.js check_attendance_tables.cjs check_database_schema.js fetch_all_data.js fetch_users.js package.json package-lock.json)",
+      "Bash(git add src/integrations/supabase/client.ts src/App.tsx src/pages/employee/CheckIn.tsx src/pages/manager/ManagerDashboard.tsx .claude/settings.local.json)"
     ],
     "deny": [],
     "ask": []
