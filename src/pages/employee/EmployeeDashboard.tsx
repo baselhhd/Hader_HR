@@ -17,6 +17,8 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { getSession, clearSession } from "@/lib/auth";
+import { useUserLocationInfo } from "@/hooks/useUserLocationInfo";
+import { UserLocationDisplay } from "@/components/UserLocationDisplay";
 
 interface UserProfile {
   full_name: string;
@@ -52,6 +54,9 @@ const EmployeeDashboard = () => {
   const [todayAttendance, setTodayAttendance] = useState<TodayAttendance | null>(null);
   const [monthStats, setMonthStats] = useState({ present: 0, late: 0, total: 20 });
   const [isLoading, setIsLoading] = useState(true);
+
+  // Get user location info (company, branch, location)
+  const locationInfo = useUserLocationInfo(user?.userId || "", user?.role || "");
 
   useEffect(() => {
     checkAuth();
@@ -205,7 +210,13 @@ const EmployeeDashboard = () => {
           </Button>
         </div>
         <p className="text-white/90 flex items-center gap-2">
-          <span>📍</span> {employeeData?.locations?.name || "غير محدد"}
+          <span>📍</span>
+          <UserLocationDisplay
+            companyName={locationInfo.company?.name}
+            branchName={locationInfo.branch?.name}
+            locationName={locationInfo.location?.name}
+            variant="inline"
+          />
         </p>
       </div>
 

@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AdminCharts } from "@/components/AdminCharts";
+import { useUserLocationInfo } from "@/hooks/useUserLocationInfo";
+import { UserLocationDisplay } from "@/components/UserLocationDisplay";
+import { getSession } from "@/lib/auth";
 
 interface SystemStats {
   totalCompanies: number;
@@ -41,6 +44,11 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
+  const [userRole, setUserRole] = useState<string>("");
+
+  // Get user location info (company)
+  const locationInfo = useUserLocationInfo(userId, userRole);
 
   useEffect(() => {
     fetchUserInfo();
@@ -48,6 +56,23 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchUserInfo = async () => {
+    // Check for local session first
+    const session = getSession();
+
+    if (session) {
+      // Check if user is super_admin
+      if (session.role !== "super_admin") {
+        toast.error("غير مصرح لك بالدخول لهذه الصفحة");
+        navigate("/login");
+        return;
+      }
+      setUserId(session.userId);
+      setUserRole(session.role);
+      setUserName(session.fullName || session.username);
+      return;
+    }
+
+    // Fallback to Supabase Auth
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       const { data: userData } = await supabase
@@ -63,6 +88,8 @@ const AdminDashboard = () => {
           navigate("/login");
           return;
         }
+        setUserId(user.id);
+        setUserRole(userData.role || "");
         setUserName(userData.full_name || userData.username);
       }
     }
@@ -134,6 +161,11 @@ const AdminDashboard = () => {
                 لوحة تحكم المدير العام
               </h1>
               <p className="text-gray-600">مرحباً، {userName}</p>
+              {locationInfo.company && (
+                <p className="text-gray-500 text-sm mt-1">
+                  🏢 {locationInfo.company.name}
+                </p>
+              )}
             </div>
           </div>
           <Button

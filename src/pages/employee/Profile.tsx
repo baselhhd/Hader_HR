@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight, User, Mail, Phone, Lock, Check, X, ArrowLeft } from "lucide-react";
+import { ArrowRight, User, Mail, Phone, Lock, Check, X, ArrowLeft, Briefcase } from "lucide-react";
 import { toast } from "sonner";
 import {
   isInternalEmail,
@@ -17,6 +17,8 @@ import {
   updateUserEmail,
   updateUserPhone
 } from "@/utils/authHelpers";
+import { useUserLocationInfo } from "@/hooks/useUserLocationInfo";
+import { UserLocationDisplay } from "@/components/UserLocationDisplay";
 
 interface UserProfile {
   id: string;
@@ -50,6 +52,9 @@ const Profile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+
+  // Get user location info (company, branch, location)
+  const locationInfo = useUserLocationInfo(profile?.id || "", profile?.role || "");
 
   useEffect(() => {
     loadProfile();
@@ -243,6 +248,26 @@ const Profile = () => {
                 </p>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Work Information Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-primary" />
+              <CardTitle>معلومات العمل</CardTitle>
+            </div>
+            <CardDescription>بيانات الشركة والموقع</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UserLocationDisplay
+              companyName={locationInfo.company?.name}
+              branchName={locationInfo.branch?.name}
+              locationName={locationInfo.location?.name}
+              locationsCount={locationInfo.locations.length}
+              variant="card"
+            />
           </CardContent>
         </Card>
 

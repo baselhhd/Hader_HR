@@ -9,6 +9,8 @@ import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { QRCodeCanvas } from "qrcode.react";
 import { getSession, clearSession } from "@/lib/auth";
+import { useUserLocationInfo } from "@/hooks/useUserLocationInfo";
+import { UserLocationDisplay } from "@/components/UserLocationDisplay";
 
 interface ManagerData {
   location_id: string;
@@ -47,6 +49,9 @@ const ManagerDashboard = () => {
   const [todayStats, setTodayStats] = useState({ present: 0, late: 0, absent: 0, total: 20 });
   const [recentAttendance, setRecentAttendance] = useState<AttendanceRecord[]>([]);
   const [suspiciousCount, setSuspiciousCount] = useState(0);
+
+  // Get user location info (company, branch, locations)
+  const locationInfo = useUserLocationInfo(user?.userId || "", user?.role || "");
 
   useEffect(() => {
     checkAuth();
@@ -320,8 +325,18 @@ const ManagerDashboard = () => {
       <div className="bg-gradient-header text-white p-6 pb-8 rounded-b-3xl shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold mb-1">📍 {location.name}</h1>
-            <p className="text-white/90 text-sm">
+            <h1 className="text-2xl font-bold mb-1">مرحباً طارق</h1>
+            <p className="text-white/90 text-sm flex items-center gap-2">
+              📍
+              <UserLocationDisplay
+                companyName={locationInfo.company?.name}
+                branchName={locationInfo.branch?.name}
+                locationName={locationInfo.location?.name}
+                locationsCount={locationInfo.locations.length}
+                variant="inline"
+              />
+            </p>
+            <p className="text-white/80 text-xs mt-1">
               {format(new Date(), "EEEE، dd MMMM", { locale: ar })} • {format(new Date(), "hh:mm a")}
             </p>
           </div>

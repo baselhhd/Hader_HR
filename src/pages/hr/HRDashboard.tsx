@@ -16,6 +16,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AttendanceChart } from "@/components/AttendanceChart";
+import { useUserLocationInfo } from "@/hooks/useUserLocationInfo";
+import { UserLocationDisplay } from "@/components/UserLocationDisplay";
+import { getSession } from "@/lib/auth";
 
 interface DashboardStats {
   totalEmployees: number;
@@ -36,6 +39,11 @@ const HRDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
+  const [userRole, setUserRole] = useState<string>("");
+
+  // Get user location info (company, branch)
+  const locationInfo = useUserLocationInfo(userId, userRole);
 
   useEffect(() => {
     fetchUserInfo();
@@ -43,15 +51,28 @@ const HRDashboard = () => {
   }, []);
 
   const fetchUserInfo = async () => {
+    // Check for local session first
+    const session = getSession();
+
+    if (session) {
+      setUserId(session.userId);
+      setUserRole(session.role);
+      setUserName(session.fullName || session.username);
+      return;
+    }
+
+    // Fallback to Supabase Auth
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       const { data: userData } = await supabase
         .from("users")
-        .select("username, full_name")
+        .select("username, full_name, role")
         .eq("id", user.id)
         .single();
 
       if (userData) {
+        setUserId(user.id);
+        setUserRole(userData.role || "");
         setUserName(userData.full_name || userData.username);
       }
     }
@@ -111,6 +132,13 @@ const HRDashboard = () => {
               لوحة تحكم الموارد البشرية
             </h1>
             <p className="text-gray-600">مرحباً، {userName}</p>
+            <p className="text-gray-500 text-sm mt-1">
+              <UserLocationDisplay
+                companyName={locationInfo.company?.name}
+                branchName={locationInfo.branch?.name}
+                variant="inline"
+              />
+            </p>
           </div>
           <Button
             onClick={handleLogout}
