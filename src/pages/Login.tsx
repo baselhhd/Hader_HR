@@ -92,8 +92,9 @@ const Login = () => {
       } else if (userData.role === "super_admin") {
         navigate("/admin/dashboard");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Login error:", error);
+      const message = error instanceof Error ? error.message : 'خطأ غير متوقع';
       toast.error("حدث خطأ أثناء تسجيل الدخول");
     } finally {
       setIsLoading(false);

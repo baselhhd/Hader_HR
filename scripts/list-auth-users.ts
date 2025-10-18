@@ -22,8 +22,9 @@ async function listUsers() {
       console.log('');
     });
 
-  } catch (error: any) {
-    console.error('❌ Error:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Error:', message);
   }
 }
 

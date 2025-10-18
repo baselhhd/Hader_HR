@@ -57,7 +57,7 @@ const Settings = () => {
       if (savedSettings) {
         setSettings(JSON.parse(savedSettings));
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching settings:", error);
       toast.error("خطأ في تحميل الإعدادات");
     } finally {
@@ -90,7 +90,7 @@ const Settings = () => {
       localStorage.setItem("system_settings", JSON.stringify(settings));
 
       toast.success("تم حفظ الإعدادات بنجاح");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error saving settings:", error);
       toast.error("خطأ في حفظ الإعدادات");
     } finally {

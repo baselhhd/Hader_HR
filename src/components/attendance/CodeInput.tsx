@@ -5,9 +5,13 @@ import { ArrowRight, Delete } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+interface CodeData {
+  code: string;
+}
+
 interface CodeInputProps {
   locationId: string;
-  onSuccess: (data: any) => void;
+  onSuccess: (data: CodeData) => void;
   onCancel: () => void;
 }
 

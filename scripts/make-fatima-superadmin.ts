@@ -26,8 +26,9 @@ async function makeSuperAdmin() {
     console.log('\n🔗 Login URL: http://localhost:8080/login');
     console.log('📍 Dashboard: /admin/dashboard\n');
 
-  } catch (error: any) {
-    console.error('❌ Error:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Error:', message);
   }
 }
 

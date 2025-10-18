@@ -5,8 +5,12 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+interface QRCodeData {
+  qr_code: string;
+}
+
 interface QRScannerProps {
-  onSuccess: (data: any) => void;
+  onSuccess: (data: QRCodeData) => void;
   onCancel: () => void;
 }
 
@@ -15,6 +19,49 @@ const QRScanner = ({ onSuccess, onCancel }: QRScannerProps) => {
   const [isScanning, setIsScanning] = useState(true);
 
   useEffect(() => {
+    const handleScan = async (decodedText: string) => {
+      if (!isScanning) return;
+      setIsScanning(false);
+
+      try {
+        // Verify QR code exists and is not expired
+        const { data: qrData, error } = await supabase
+          .from("qr_codes")
+          .select("*")
+          .eq("code_data", decodedText)
+          .gt("expires_at", new Date().toISOString())
+          .maybeSingle();
+
+        if (error || !qrData) {
+          toast.error("رمز QR غير صحيح أو منتهي الصلاحية");
+          setIsScanning(true);
+          return;
+        }
+
+        // Mark QR as used
+        await supabase
+          .from("qr_codes")
+          .update({
+            used_by: (await supabase.auth.getUser()).data.user?.id,
+            used_at: new Date().toISOString(),
+          })
+          .eq("id", qrData.id);
+
+        toast.success("تم مسح QR بنجاح!");
+        onSuccess({ qr_code: decodedText });
+      } catch (error) {
+        console.error("QR Scan error:", error);
+        toast.error("حدث خطأ أثناء مسح QR");
+        setIsScanning(true);
+      }
+    };
+
+    const handleError = (error: string) => {
+      // Ignore frequent errors
+      if (error.includes("NotFoundException")) return;
+      console.warn("QR Scan error:", error);
+    };
+
     const scanner = new Html5QrcodeScanner(
       "qr-reader",
       {
@@ -31,50 +78,8 @@ const QRScanner = ({ onSuccess, onCancel }: QRScannerProps) => {
     return () => {
       scanner.clear().catch(console.error);
     };
-  }, []);
+  }, [isScanning, onSuccess]);
 
-  const handleScan = async (decodedText: string) => {
-    if (!isScanning) return;
-    setIsScanning(false);
-
-    try {
-      // Verify QR code exists and is not expired
-      const { data: qrData, error } = await supabase
-        .from("qr_codes")
-        .select("*")
-        .eq("code_data", decodedText)
-        .gt("expires_at", new Date().toISOString())
-        .maybeSingle();
-
-      if (error || !qrData) {
-        toast.error("رمز QR غير صحيح أو منتهي الصلاحية");
-        setIsScanning(true);
-        return;
-      }
-
-      // Mark QR as used
-      await supabase
-        .from("qr_codes")
-        .update({
-          used_by: (await supabase.auth.getUser()).data.user?.id,
-          used_at: new Date().toISOString(),
-        })
-        .eq("id", qrData.id);
-
-      toast.success("تم مسح QR بنجاح!");
-      onSuccess({ qr_code: decodedText });
-    } catch (error) {
-      console.error("QR Scan error:", error);
-      toast.error("حدث خطأ أثناء مسح QR");
-      setIsScanning(true);
-    }
-  };
-
-  const handleError = (error: any) => {
-    // Ignore frequent errors
-    if (error.includes("NotFoundException")) return;
-    console.warn("QR Scan error:", error);
-  };
 
   return (
     <div className="min-h-screen bg-background" dir="rtl">

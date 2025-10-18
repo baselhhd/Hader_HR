@@ -27,3 +27,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary and test files
+nul
+test-env-integration.js
+fetch_users_table.js
+fetch_users_table.cjs
+database_snapshot_*.json

@@ -25,8 +25,9 @@ async function checkAuthUsers() {
       console.log('');
     });
 
-  } catch (error: any) {
-    console.error('❌ Unexpected error:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Unexpected error:', message);
   }
 }
 

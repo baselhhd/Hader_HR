@@ -65,7 +65,7 @@ const Shifts = () => {
       }
 
       setShifts(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     } finally {
@@ -145,7 +145,7 @@ const Shifts = () => {
       setEditingShift(null);
       setIsDialogOpen(false);
       fetchShifts();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }
@@ -177,7 +177,7 @@ const Shifts = () => {
 
       toast.success("تم حذف الوردية بنجاح");
       fetchShifts();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }

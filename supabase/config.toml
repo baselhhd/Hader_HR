@@ -1,1 +1,6 @@
-project_id = "ccqfviqftfbywlobyjev"
+project_ref = "ccqfviqftfbywlobyjev"
+
+[mcp]
+enabled = true
+regions = ["ap-southeast-1"]
+default_region = "ap-southeast-1"

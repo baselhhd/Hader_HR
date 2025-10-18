@@ -72,7 +72,7 @@ export function useUserCompanyData(): UserCompanyData {
           throw employeeError;
         }
 
-        const location = employee?.locations as any;
+        const location = employee?.locations as { id: string; name: string; lat: number; lng: number; gps_radius: number } | null;
 
         setData({
           companyId: userProfile?.company_id || null,

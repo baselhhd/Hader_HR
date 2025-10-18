@@ -114,7 +114,7 @@ const Locations = () => {
       }
 
       setBranches(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
     }
   };
@@ -151,7 +151,7 @@ const Locations = () => {
 
       setLocations(data || []);
       setFilteredLocations(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     } finally {
@@ -254,7 +254,7 @@ const Locations = () => {
       setEditingLocation(null);
       setIsDialogOpen(false);
       fetchLocations();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }
@@ -289,7 +289,7 @@ const Locations = () => {
 
       toast.success("تم حذف الموقع بنجاح");
       fetchLocations();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }

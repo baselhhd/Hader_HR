@@ -160,8 +160,9 @@ async function checkDatabase() {
 
     console.log('\n✅ Database check completed!');
 
-  } catch (error: any) {
-    console.error('❌ Unexpected error:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Unexpected error:', message);
   }
 }
 

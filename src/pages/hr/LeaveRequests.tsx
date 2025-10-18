@@ -75,7 +75,7 @@ const LeaveRequests = () => {
       }
 
       setRequests(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     } finally {
@@ -98,7 +98,7 @@ const LeaveRequests = () => {
 
       toast.success("تم الموافقة على الطلب بنجاح");
       fetchLeaveRequests();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }
@@ -119,7 +119,7 @@ const LeaveRequests = () => {
 
       toast.success("تم رفض الطلب");
       fetchLeaveRequests();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }

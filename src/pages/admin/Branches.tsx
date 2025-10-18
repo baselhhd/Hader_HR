@@ -94,7 +94,7 @@ const Branches = () => {
       }
 
       setCompanies(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
     }
   };
@@ -141,7 +141,7 @@ const Branches = () => {
 
       setBranches(branchesWithCounts);
       setFilteredBranches(branchesWithCounts);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     } finally {
@@ -195,7 +195,7 @@ const Branches = () => {
       setEditingBranch(null);
       setIsDialogOpen(false);
       fetchBranches();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }
@@ -230,7 +230,7 @@ const Branches = () => {
 
       toast.success("تم حذف الفرع بنجاح");
       fetchBranches();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }

@@ -15,6 +15,40 @@ interface ReportStats {
   approvedRequests: number;
 }
 
+interface AttendanceRecord {
+  users?: {
+    username: string;
+    full_name: string;
+  };
+  check_in: string;
+  check_out?: string;
+  method_used: string;
+  status: string;
+}
+
+interface LeaveRecord {
+  users?: {
+    username: string;
+    full_name: string;
+  };
+  start_date: string;
+  end_date: string;
+  reason: string;
+  status: string;
+  created_at: string;
+}
+
+interface UserRecord {
+  id: string;
+  username: string;
+  full_name: string;
+  role: string;
+}
+
+interface DeptRecord {
+  role: string;
+}
+
 const Reports = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState<ReportStats>({
@@ -76,7 +110,7 @@ const Reports = () => {
         pendingRequests: pendingRequests || 0,
         approvedRequests: approvedRequests || 0,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching stats:", error);
       toast.error("خطأ في تحميل الإحصائيات");
     } finally {
@@ -88,12 +122,12 @@ const Reports = () => {
     try {
       toast.info(`جاري تصدير تقرير ${reportType}...`);
 
-      let data: any[] = [];
+      let data: Array<Record<string, string | number>> = [];
       let filename = "";
       let headers: string[] = [];
 
       switch (reportType) {
-        case "الحضور والانصراف":
+        case "الحضور والانصراف": {
           filename = `attendance_report_${new Date().toISOString().split("T")[0]}.csv`;
           const { data: attendanceData, error: attendanceError } = await supabase
             .from("attendance_records")
@@ -114,7 +148,7 @@ const Reports = () => {
           if (attendanceError) throw attendanceError;
 
           headers = ["اسم المستخدم", "الاسم الكامل", "تاريخ الحضور", "وقت الحضور", "وقت الانصراف", "الطريقة", "الحالة"];
-          data = (attendanceData || []).map((record: any) => ({
+          data = (attendanceData || []).map((record: AttendanceRecord) => ({
             username: record.users?.username || "-",
             full_name: record.users?.full_name || "-",
             date: new Date(record.check_in).toLocaleDateString("ar-SA"),
@@ -124,8 +158,9 @@ const Reports = () => {
             status: record.status,
           }));
           break;
+        }
 
-        case "الإجازات":
+        case "الإجازات": {
           filename = `leave_requests_report_${new Date().toISOString().split("T")[0]}.csv`;
           const { data: leaveData, error: leaveError } = await supabase
             .from("leave_requests")
@@ -147,7 +182,7 @@ const Reports = () => {
           if (leaveError) throw leaveError;
 
           headers = ["اسم المستخدم", "الاسم الكامل", "تاريخ البداية", "تاريخ النهاية", "السبب", "الحالة", "تاريخ الطلب"];
-          data = (leaveData || []).map((record: any) => ({
+          data = (leaveData || []).map((record: LeaveRecord) => ({
             username: record.users?.username || "-",
             full_name: record.users?.full_name || "-",
             start_date: new Date(record.start_date).toLocaleDateString("ar-SA"),
@@ -157,8 +192,9 @@ const Reports = () => {
             created_at: new Date(record.created_at).toLocaleDateString("ar-SA"),
           }));
           break;
+        }
 
-        case "الأداء":
+        case "الأداء": {
           filename = `performance_report_${new Date().toISOString().split("T")[0]}.csv`;
           // Get users with their attendance count
           const { data: usersData, error: usersError } = await supabase
@@ -169,7 +205,7 @@ const Reports = () => {
           if (usersError) throw usersError;
 
           const performanceData = await Promise.all(
-            (usersData || []).map(async (user: any) => {
+            (usersData || []).map(async (user: UserRecord) => {
               const { count: attendanceCount } = await supabase
                 .from("attendance_records")
                 .select("*", { count: "exact", head: true })
@@ -186,8 +222,9 @@ const Reports = () => {
           headers = ["اسم المستخدم", "الاسم الكامل", "عدد أيام الحضور"];
           data = performanceData;
           break;
+        }
 
-        case "الأقسام":
+        case "الأقسام": {
           filename = `departments_report_${new Date().toISOString().split("T")[0]}.csv`;
           const { data: deptData, error: deptError } = await supabase
             .from("users")
@@ -197,7 +234,7 @@ const Reports = () => {
           if (deptError) throw deptError;
 
           const roleCounts: Record<string, number> = {};
-          (deptData || []).forEach((user: any) => {
+          (deptData || []).forEach((user: DeptRecord) => {
             roleCounts[user.role] = (roleCounts[user.role] || 0) + 1;
           });
 
@@ -207,6 +244,7 @@ const Reports = () => {
             count,
           }));
           break;
+        }
 
         case "جميع التقارير":
           toast.info("سيتم تصدير جميع التقارير في ملفات منفصلة");
@@ -236,7 +274,7 @@ const Reports = () => {
       URL.revokeObjectURL(url);
 
       toast.success(`تم تصدير تقرير ${reportType} بنجاح`);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error exporting report:", error);
       toast.error(`خطأ في تصدير تقرير ${reportType}`);
     }

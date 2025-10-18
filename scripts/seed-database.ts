@@ -138,7 +138,7 @@ async function seedDatabase() {
       .eq('id', employeeUserId)
       .maybeSingle();
 
-    let employeeProfile: any;
+    let employeeProfile: typeof existingProfile;
     if (existingProfile) {
       console.log('ℹ️  Employee profile already exists, updating...');
       const { data, error } = await supabase
@@ -426,8 +426,9 @@ async function seedDatabase() {
     console.log('   • Email الداخلي بصيغة: {username}@internal.hader.local');
     console.log('   • يمكن تحديث Email من داخلي إلى حقيقي في أي وقت\n');
 
-  } catch (error: any) {
-    console.error('❌ Error seeding database:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Error seeding database:', message);
     console.error(error);
   }
 }

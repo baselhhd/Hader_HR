@@ -70,8 +70,9 @@ async function fixUsernames() {
 
     console.log('✅ Usernames fixed!\n');
 
-  } catch (error: any) {
-    console.error('❌ Error:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Error:', message);
   }
 }
 

@@ -5,9 +5,13 @@ import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+interface ColorData {
+  color: string;
+}
+
 interface ColorSelectorProps {
   locationId: string;
-  onSuccess: (data: any) => void;
+  onSuccess: (data: ColorData) => void;
   onCancel: () => void;
 }
 

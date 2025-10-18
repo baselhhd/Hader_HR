@@ -11,10 +11,16 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 
+interface SuspiciousReason {
+  type: string;
+  text: string;
+  points: number;
+}
+
 interface VerificationRequest {
   id: string;
   suspicious_score: number;
-  suspicious_reasons: any;
+  suspicious_reasons: SuspiciousReason[];
   status: string;
   expires_at: string;
   created_at: string;
@@ -40,6 +46,17 @@ interface VerificationRequest {
   };
 }
 
+interface EmployeeRecord {
+  user_id: string;
+  employee_number: string;
+  department: string;
+  position: string;
+}
+
+interface RawVerificationRequest extends Omit<VerificationRequest, 'employee'> {
+  employee_id: string;
+}
+
 const VerificationRequests = () => {
   const navigate = useNavigate();
   const [requests, setRequests] = useState<VerificationRequest[]>([]);
@@ -51,6 +68,7 @@ const VerificationRequests = () => {
 
   useEffect(() => {
     checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAuth = async () => {
@@ -121,22 +139,22 @@ const VerificationRequests = () => {
       const locationIds = [managerData.location_id];
       
       // Filter by location
-      const filteredData = (data || []).filter((req: any) => {
+      const filteredData = (data || []).filter((req: RawVerificationRequest) => {
         return locationIds.includes(req.attendance_records?.location_id);
       });
 
       // Get employee details for filtered requests
-      const employeeIds = filteredData.map((req: any) => req.employee_id);
-      
+      const employeeIds = filteredData.map((req: RawVerificationRequest) => req.employee_id);
+
       const { data: employeeData } = await supabase
         .from("employees")
         .select("user_id, employee_number, department, position")
         .in("user_id", employeeIds);
 
       // Merge employee data
-      const enrichedData = filteredData.map((req: any) => ({
+      const enrichedData = filteredData.map((req: RawVerificationRequest) => ({
         ...req,
-        employee: employeeData?.find((emp: any) => emp.user_id === req.employee_id)
+        employee: employeeData?.find((emp: EmployeeRecord) => emp.user_id === req.employee_id)
       }));
 
       setRequests(enrichedData);
@@ -309,7 +327,7 @@ const VerificationRequests = () => {
                 <div className="mb-4">
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">أسباب الشك:</h4>
                   <div className="space-y-1">
-                    {Array.isArray(request.suspicious_reasons) && request.suspicious_reasons.map((reason: any, idx: number) => (
+                    {Array.isArray(request.suspicious_reasons) && request.suspicious_reasons.map((reason: SuspiciousReason, idx: number) => (
                       <div key={idx} className="flex items-start gap-2 text-sm text-gray-600">
                         <span className="text-amber-500">•</span>
                         <span>{reason.text} ({reason.points} نقطة)</span>

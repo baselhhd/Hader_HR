@@ -49,16 +49,18 @@ async function applyRLSFix() {
         } else {
           console.log('✅ Success');
         }
-      } catch (err: any) {
-        console.log(`⚠️  Skipping: ${err.message}`);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        console.log(`⚠️  Skipping: ${message}`);
       }
     }
 
     console.log('\n✅ RLS Policy fixes applied!\n');
     console.log('📝 Note: Please verify policies in Supabase Dashboard\n');
 
-  } catch (error: any) {
-    console.error('❌ Error applying RLS fixes:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Error applying RLS fixes:', message);
   }
 }
 

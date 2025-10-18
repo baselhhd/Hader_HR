@@ -64,7 +64,7 @@ const LeaveRequest = () => {
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
   const [reason, setReason] = useState("");
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     checkAuth();
@@ -140,9 +140,10 @@ const LeaveRequest = () => {
       });
 
       if (!result.success) {
-        const formattedErrors: any = {};
+        const formattedErrors: Record<string, string> = {};
         result.error.errors.forEach((err) => {
-          formattedErrors[err.path[0]] = err.message;
+          const key = err.path[0] as string;
+          formattedErrors[key] = err.message;
         });
         setErrors(formattedErrors);
         toast.error("يرجى تصحيح الأخطاء في النموذج");
@@ -173,12 +174,12 @@ const LeaveRequest = () => {
       // Submit request
       const { error } = await supabase.from("leave_requests").insert({
         employee_id: user.id,
-        leave_type: leaveType as any,
+        leave_type: leaveType as "annual" | "sick" | "personal" | "emergency" | "unpaid",
         start_date: format(startDate!, "yyyy-MM-dd"),
         end_date: format(endDate!, "yyyy-MM-dd"),
         days,
         reason: reason.trim(),
-        status: "pending" as any,
+        status: "pending",
       });
 
       if (error) throw error;

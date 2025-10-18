@@ -46,7 +46,7 @@ interface TodayAttendance {
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ userId: string; username: string; email: string | null; fullName: string; role: string; companyId: string | null; branchId: string | null } | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [employeeData, setEmployeeData] = useState<EmployeeData | null>(null);
   const [todayAttendance, setTodayAttendance] = useState<TodayAttendance | null>(null);

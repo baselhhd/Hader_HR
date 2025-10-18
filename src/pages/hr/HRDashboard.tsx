@@ -87,7 +87,7 @@ const HRDashboard = () => {
         pendingRequests: pendingRequests || 0,
         onLeaveToday: 0, // TODO: Calculate based on leave requests
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching stats:", error);
       toast.error("خطأ في تحميل الإحصائيات");
     } finally {

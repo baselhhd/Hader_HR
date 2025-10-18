@@ -95,7 +95,7 @@ const Users = () => {
 
       setUsers(data || []);
       setFilteredUsers(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     } finally {
@@ -135,7 +135,13 @@ const Users = () => {
     try {
       if (editingUser) {
         // Update user
-        const updateData: any = {
+        const updateData: {
+          username: string;
+          full_name: string | null;
+          email: string | null;
+          phone: string | null;
+          role: string;
+        } = {
           username: formData.username,
           full_name: formData.full_name || null,
           email: formData.email || null,
@@ -186,7 +192,7 @@ const Users = () => {
       setEditingUser(null);
       setIsDialogOpen(false);
       fetchUsers();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }
@@ -221,7 +227,7 @@ const Users = () => {
 
       toast.success("تم حذف المستخدم بنجاح");
       fetchUsers();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }

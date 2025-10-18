@@ -23,6 +23,40 @@ interface LocationInfo {
   gps_radius: number;
 }
 
+interface AttendanceData {
+  id: string;
+  check_in: string;
+  check_out?: string;
+  work_hours?: number;
+  gps_distance?: number;
+  suspicious_score: number;
+  suspicious_reasons?: Array<{
+    type: string;
+    text: string;
+    points: number;
+  }>;
+}
+
+interface CheckInData {
+  company_id: string;
+  branch_id: string;
+  location_id: string;
+  employee_id: string;
+  check_in: string;
+  method_used: "qr" | "color" | "code";
+  method_data: unknown;
+  gps_lat?: number;
+  gps_lng?: number;
+  gps_distance: number | null;
+  status: "approved" | "suspicious";
+  suspicious_score: number;
+  suspicious_reasons?: Array<{
+    type: string;
+    text: string;
+    points: number;
+  }>;
+}
+
 const CheckIn = () => {
   const navigate = useNavigate();
   const { companyId, branchId, locationId, locationName, locationLat, locationLng, locationRadius } = useUserCompanyData();
@@ -31,9 +65,9 @@ const CheckIn = () => {
   const [location, setLocation] = useState<LocationInfo | null>(null);
   const [isInRange, setIsInRange] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [attendanceData, setAttendanceData] = useState<any>(null);
+  const [attendanceData, setAttendanceData] = useState<AttendanceData | null>(null);
   const [pageMode, setPageMode] = useState<PageMode>("checkin");
-  const [todayAttendance, setTodayAttendance] = useState<any>(null);
+  const [todayAttendance, setTodayAttendance] = useState<AttendanceData | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   // Update location when hook data is available
@@ -137,7 +171,7 @@ const CheckIn = () => {
     setStep("scanning");
   };
 
-  const handleCheckInComplete = async (methodData: any) => {
+  const handleCheckInComplete = async (methodData: unknown) => {
     const session = getSession();
     if (!session) return;
 
@@ -147,20 +181,20 @@ const CheckIn = () => {
     }
 
     try {
-      const checkInData: any = {
+      const checkInData: CheckInData = {
         company_id: companyId,
         branch_id: branchId,
         location_id: locationId,
         employee_id: session.userId,
         check_in: new Date().toISOString(),
-        method_used: method === "qr" ? "qr" as const : method === "color" ? "color" as const : "code" as const,
+        method_used: method === "qr" ? "qr" : method === "color" ? "color" : "code",
         method_data: methodData,
         gps_lat: userLocation?.lat,
         gps_lng: userLocation?.lng,
         gps_distance: location && userLocation
           ? calculateDistance(userLocation.lat, userLocation.lng, location.lat, location.lng)
           : null,
-        status: "approved" as const,
+        status: "approved",
         suspicious_score: 0,
       };
 
@@ -182,7 +216,7 @@ const CheckIn = () => {
       }
 
       if (suspicionScore >= 50) {
-        checkInData.status = "suspicious" as const;
+        checkInData.status = "suspicious";
         checkInData.suspicious_score = suspicionScore;
         checkInData.suspicious_reasons = reasons;
       }
@@ -208,7 +242,7 @@ const CheckIn = () => {
           expires_at: new Date(Date.now() + 20 * 60 * 1000).toISOString(),
         });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Check-in error:", error);
       toast.error("حدث خطأ أثناء تسجيل الحضور");
     }
@@ -549,7 +583,7 @@ const CheckIn = () => {
 
           <Card className="p-6 space-y-4 bg-warning/5 border-warning/20">
             <h3 className="font-bold text-lg">أسباب الاشتباه:</h3>
-            {attendanceData?.suspicious_reasons?.map((reason: any, index: number) => (
+            {attendanceData?.suspicious_reasons?.map((reason, index: number) => (
               <div key={index} className="flex items-center gap-3 p-3 bg-background rounded-lg">
                 <div className="w-10 h-10 bg-warning/10 rounded-full flex items-center justify-center text-warning font-bold">
                   {reason.points}

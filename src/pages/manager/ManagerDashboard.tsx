@@ -19,17 +19,33 @@ interface ManagerData {
   };
 }
 
+interface LocationData {
+  id: string;
+  name: string;
+  company_id: string;
+}
+
+interface AttendanceRecord {
+  id: string;
+  check_in: string;
+  method_used: string;
+  status: string;
+  users?: {
+    full_name: string;
+  };
+}
+
 const ManagerDashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-  const [location, setLocation] = useState<any>(null);
+  const [user, setUser] = useState<{ userId: string; role: string; username: string } | null>(null);
+  const [location, setLocation] = useState<LocationData | null>(null);
   const [activeMethod, setActiveMethod] = useState<"qr" | "color" | "code">("qr");
   const [currentCode, setCurrentCode] = useState("");
   const [currentColor, setCurrentColor] = useState("red");
   const [currentNumericCode, setCurrentNumericCode] = useState("0000");
   const [timeLeft, setTimeLeft] = useState(120);
   const [todayStats, setTodayStats] = useState({ present: 0, late: 0, absent: 0, total: 20 });
-  const [recentAttendance, setRecentAttendance] = useState<any[]>([]);
+  const [recentAttendance, setRecentAttendance] = useState<AttendanceRecord[]>([]);
   const [suspiciousCount, setSuspiciousCount] = useState(0);
 
   useEffect(() => {
@@ -69,6 +85,7 @@ const ManagerDashboard = () => {
 
       return () => clearInterval(interval);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, activeMethod]);
 
   const checkAuth = async () => {
@@ -328,7 +345,7 @@ const ManagerDashboard = () => {
           <select
             value={activeMethod}
             onChange={(e) => {
-              setActiveMethod(e.target.value as any);
+              setActiveMethod(e.target.value as "qr" | "color" | "code");
               setTimeLeft(e.target.value === "qr" ? 120 : e.target.value === "color" ? 20 : 300);
             }}
             className="w-full h-12 px-4 rounded-lg border-2 border-primary/30 bg-background font-medium"
@@ -394,7 +411,7 @@ const ManagerDashboard = () => {
               variant={activeMethod === m ? "default" : "outline"}
               size="sm"
               onClick={() => {
-                setActiveMethod(m as any);
+                setActiveMethod(m as "qr" | "color" | "code");
                 setTimeLeft(m === "qr" ? 120 : m === "color" ? 20 : 300);
               }}
               className="flex-1"

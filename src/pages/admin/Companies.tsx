@@ -105,7 +105,7 @@ const Companies = () => {
 
       setCompanies(companiesWithCounts);
       setFilteredCompanies(companiesWithCounts);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     } finally {
@@ -160,7 +160,7 @@ const Companies = () => {
       setEditingCompany(null);
       setIsDialogOpen(false);
       fetchCompanies();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }
@@ -194,7 +194,7 @@ const Companies = () => {
 
       toast.success("تم حذف الشركة بنجاح");
       fetchCompanies();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     }

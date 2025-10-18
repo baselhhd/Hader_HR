@@ -41,8 +41,9 @@ async function cleanAndReseed() {
     console.log('✅ Cleanup completed!\n');
     console.log('▶️  Now run: npx tsx scripts/seed-database.ts\n');
 
-  } catch (error: any) {
-    console.error('❌ Error during cleanup:', error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Error during cleanup:', message);
     console.error(error);
   }
 }

@@ -71,7 +71,7 @@ const Profile = () => {
 
       if (error) throw error;
       setProfile(data);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error loading profile:", error);
       toast.error("حدث خطأ أثناء تحميل البيانات");
     } finally {
@@ -100,7 +100,7 @@ const Profile = () => {
         // تحديث الصفحة بعد 2 ثانية
         setTimeout(() => loadProfile(), 2000);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating email:", error);
       toast.error("حدث خطأ أثناء تحديث البريد الإلكتروني");
     } finally {
@@ -127,7 +127,7 @@ const Profile = () => {
         setNewPhone("");
         loadProfile();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating phone:", error);
       toast.error("حدث خطأ أثناء تحديث رقم الجوال");
     } finally {
@@ -159,7 +159,7 @@ const Profile = () => {
       setShowPasswordForm(false);
       setNewPassword("");
       setConfirmPassword("");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating password:", error);
       toast.error("حدث خطأ أثناء تغيير كلمة المرور");
     } finally {

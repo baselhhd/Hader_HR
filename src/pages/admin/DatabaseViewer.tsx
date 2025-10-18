@@ -53,7 +53,7 @@ const DatabaseViewer = () => {
 
       setUsers(data || []);
       toast.success(`تم جلب ${data?.length || 0} مستخدم بنجاح`);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     } finally {

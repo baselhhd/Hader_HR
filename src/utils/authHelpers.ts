@@ -247,9 +247,10 @@ export async function createUserAccount(userData: CreateUserData) {
       }
     };
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error creating user account:', error);
-    return { error: error.message || 'حدث خطأ غير متوقع' };
+    const message = error instanceof Error ? error.message : 'حدث خطأ غير متوقع';
+    return { error: message };
   }
 }
 
@@ -305,9 +306,10 @@ export async function updateUserEmail(newEmail: string) {
       }
     };
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating email:', error);
-    return { error: error.message || 'حدث خطأ غير متوقع' };
+    const message = error instanceof Error ? error.message : 'حدث خطأ غير متوقع';
+    return { error: message };
   }
 }
 
@@ -353,8 +355,9 @@ export async function updateUserPhone(newPhone: string) {
       }
     };
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error updating phone:', error);
-    return { error: error.message || 'حدث خطأ غير متوقع' };
+    const message = error instanceof Error ? error.message : 'حدث خطأ غير متوقع';
+    return { error: message };
   }
 }

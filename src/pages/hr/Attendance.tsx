@@ -95,7 +95,7 @@ const Attendance = () => {
 
       setRecords(data || []);
       setFilteredRecords(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
     } finally {

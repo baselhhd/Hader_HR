@@ -16,7 +16,15 @@
       "Bash(git add src/integrations/supabase/client.ts src/App.tsx src/pages/employee/CheckIn.tsx src/pages/manager/ManagerDashboard.tsx .claude/settings.local.json)",
       "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Update environment configuration and migrate to dotenv\n\nMajor Changes:\n- Restructure .env file with organized sections\n- Add VITE_SUPABASE_SERVICE_ROLE_KEY for server-side operations\n- Migrate all files to use environment variables\n- Install dotenv package for Node.js scripts\n\nUpdated Files:\n- src/integrations/supabase/client.ts: Use import.meta.env\n- All Node.js scripts: Add dotenv support and env variable validation\n- .gitignore: Add .env protection\n- package.json: Add dotenv dependency\n\nNew Files:\n- .env.example: Template for environment variables\n- .claude/mcp.json: Supabase MCP server configuration\n- check_manager2.cjs: Manager verification script\n- test_mcp_access.js: MCP access testing script\n\nSecurity: Credentials now managed via environment variables\nEOF\n)\")",
       "Bash(git push origin main)",
-      "Bash(dir scripts*.ts /b)"
+      "Bash(dir scripts*.ts /b)",
+      "Bash(dir /b .claude*.json)",
+      "Bash(if exist \"%APPDATA%\\Code\\User\\globalStorage\\saoudrizwan.claude-dev\\settings\\mcp.json\" echo Found global MCP config)",
+      "Bash(npm install -g @supabase/mcp-server-supabase)",
+      "Bash(dir /S /B)",
+      "Bash(npm run lint)",
+      "Bash(dir /b nul)",
+      "Bash(timeout 3 bash -c \"sleep 3\")",
+      "Bash(git add .)"
     ],
     "deny": [],
     "ask": []

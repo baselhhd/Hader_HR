@@ -106,7 +106,7 @@ const AdminDashboard = () => {
         totalShifts: totalShifts || 0,
         activeUsers: activeUsers || 0,
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching stats:", error);
       toast.error("خطأ في تحميل إحصائيات النظام");
     } finally {

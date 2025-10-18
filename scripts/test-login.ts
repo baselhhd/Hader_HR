@@ -1,10 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
+/**
+ * سكريبت اختبار تسجيل الدخول
+ * Run with: npx tsx scripts/test-login.ts
+ */
 
-// Supabase credentials
-const supabaseUrl = 'https://jwbvmqhkqvqmiwqqzrct.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3YnZtcWhrcXZxbWl3cXF6cmN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg5MTkwODksImV4cCI6MjA0NDQ5NTA4OX0.UcSd1VgMrC-hx8A0R8sBs7NR-AvHLVvRxqIJeI8xZDQ';
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabaseAnon as supabase } from './_env-config';
 
 async function testLogin() {
   console.log('🧪 Testing Login Flow...\n');
@@ -59,8 +58,9 @@ async function testLogin() {
       await supabase.auth.signOut();
       console.log('4️⃣ Signed out successfully');
 
-    } catch (error: any) {
-      console.error('   ❌ Unexpected error:', error.message);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      console.error('   ❌ Unexpected error:', message);
     }
   }
 
