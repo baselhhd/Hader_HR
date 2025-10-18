@@ -1,5 +1,5 @@
 /**
- * تطبيق إصلاح RLS لصفحة Manager Dashboard
+ * تطبيق إصلاح RLS لصفحة Manager Dashboard و Employee Check-In
  * Run with: npx tsx scripts/apply-rls-fix-manager.ts
  */
 
@@ -38,6 +38,10 @@ async function applyRLSFix() {
 
       console.log('3️⃣ تعطيل RLS على numeric_codes...');
       await supabaseAdmin.rpc('disable_rls_numeric_codes');
+      console.log('   ✅ تم');
+
+      console.log('4️⃣ تعطيل RLS على attendance_records...');
+      await supabaseAdmin.rpc('disable_rls_attendance_records');
       console.log('   ✅ تم');
 
     } else {
@@ -82,8 +86,9 @@ async function applyRLSFix() {
     console.log('='.repeat(80));
     console.log('\n💡 الخطوات التالية:');
     console.log('   1. جرب تسجيل الدخول كمدير موقع');
-    console.log('   2. افتح صفحة Manager Dashboard');
-    console.log('   3. تأكد من ظهور الأكواد بدون أخطاء\n');
+    console.log('   2. افتح صفحة Manager Dashboard - تأكد من ظهور الأكواد بدون أخطاء');
+    console.log('   3. جرب تسجيل الدخول كموظف');
+    console.log('   4. افتح صفحة Employee Check-In - سجل الحضور بالألوان\n');
 
   } catch (error) {
     console.error('\n❌ خطأ:', error);
@@ -91,7 +96,8 @@ async function applyRLSFix() {
     console.log('   قم بتنفيذ الأوامر التالية مباشرة في Supabase SQL Editor:\n');
     console.log('   ALTER TABLE qr_codes DISABLE ROW LEVEL SECURITY;');
     console.log('   ALTER TABLE color_codes DISABLE ROW LEVEL SECURITY;');
-    console.log('   ALTER TABLE numeric_codes DISABLE ROW LEVEL SECURITY;\n');
+    console.log('   ALTER TABLE numeric_codes DISABLE ROW LEVEL SECURITY;');
+    console.log('   ALTER TABLE attendance_records DISABLE ROW LEVEL SECURITY;\n');
     process.exit(1);
   }
 }

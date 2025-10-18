@@ -15,6 +15,9 @@ ALTER TABLE color_codes DISABLE ROW LEVEL SECURITY;
 -- For Numeric Codes table
 ALTER TABLE numeric_codes DISABLE ROW LEVEL SECURITY;
 
+-- For Attendance Records table (employees need to insert check-in/check-out)
+ALTER TABLE attendance_records DISABLE ROW LEVEL SECURITY;
+
 -- ==================================================
 -- OPTION 2: Keep RLS but allow INSERT for authenticated role
 -- (Comment out OPTION 1 above if using this approach)
@@ -63,3 +66,4 @@ CREATE POLICY "Allow all operations on numeric_codes"
 COMMENT ON TABLE qr_codes IS 'RLS disabled to support local auth system';
 COMMENT ON TABLE color_codes IS 'RLS disabled to support local auth system';
 COMMENT ON TABLE numeric_codes IS 'RLS disabled to support local auth system';
+COMMENT ON TABLE attendance_records IS 'RLS disabled to support local auth system - employees need to check in/out';
