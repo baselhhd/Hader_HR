@@ -1,0 +1,106 @@
+[
+  {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "name": "شركة النجاح",
+    "logo_url": null,
+    "settings": {
+      "suspicion": {
+        "enabled": true,
+        "threshold": 50,
+        "unusual_time": 15,
+        "gps_out_range": 40,
+        "verification_timeout": 20
+      },
+      "verification": {
+        "gps": {
+          "radius": 100,
+          "enabled": true,
+          "required": true
+        },
+        "selfie": {
+          "mode": "on_suspicion",
+          "face_recognition": true
+        }
+      },
+      "attendance_methods": {
+        "code": {
+          "digits": 4,
+          "enabled": true,
+          "priority": 3,
+          "refresh_interval": 300
+        },
+        "color": {
+          "colors": [
+            "red",
+            "green",
+            "blue",
+            "yellow"
+          ],
+          "enabled": true,
+          "priority": 2,
+          "refresh_interval": 20
+        },
+        "qr_code": {
+          "enabled": true,
+          "priority": 1,
+          "refresh_interval": 120
+        }
+      }
+    },
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  },
+  {
+    "id": "00000000-0000-0000-0000-000000000002",
+    "name": "شركة التطوير",
+    "logo_url": null,
+    "settings": {
+      "suspicion": {
+        "enabled": true,
+        "threshold": 50,
+        "unusual_time": 15,
+        "gps_out_range": 40,
+        "verification_timeout": 20
+      },
+      "verification": {
+        "gps": {
+          "radius": 100,
+          "enabled": true,
+          "required": true
+        },
+        "selfie": {
+          "mode": "on_suspicion",
+          "face_recognition": true
+        }
+      },
+      "attendance_methods": {
+        "code": {
+          "digits": 4,
+          "enabled": true,
+          "priority": 3,
+          "refresh_interval": 300
+        },
+        "color": {
+          "colors": [
+            "red",
+            "green",
+            "blue",
+            "yellow"
+          ],
+          "enabled": true,
+          "priority": 2,
+          "refresh_interval": 20
+        },
+        "qr_code": {
+          "enabled": true,
+          "priority": 1,
+          "refresh_interval": 120
+        }
+      }
+    },
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  }
+]

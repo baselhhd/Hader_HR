@@ -1,0 +1,191 @@
+[
+  {
+    "id": "30000000-0000-0000-0000-000000000001",
+    "location_id": "20000000-0000-0000-0000-000000000001",
+    "name": "الوردية الصباحية",
+    "start_time": "08:00:00",
+    "end_time": "16:00:00",
+    "break_start": "12:00:00",
+    "break_duration": 60,
+    "work_days": [
+      "sun",
+      "mon",
+      "tue",
+      "wed",
+      "thu"
+    ],
+    "late_arrival_buffer": 15,
+    "work_hours": 7,
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  },
+  {
+    "id": "30000000-0000-0000-0000-000000000002",
+    "location_id": "20000000-0000-0000-0000-000000000001",
+    "name": "الوردية المسائية",
+    "start_time": "16:00:00",
+    "end_time": "00:00:00",
+    "break_start": "20:00:00",
+    "break_duration": 60,
+    "work_days": [
+      "sun",
+      "mon",
+      "tue",
+      "wed",
+      "thu"
+    ],
+    "late_arrival_buffer": 15,
+    "work_hours": 7,
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  },
+  {
+    "id": "30000000-0000-0000-0000-000000000003",
+    "location_id": "20000000-0000-0000-0000-000000000001",
+    "name": "الوردية الليلية",
+    "start_time": "00:00:00",
+    "end_time": "08:00:00",
+    "break_start": "04:00:00",
+    "break_duration": 60,
+    "work_days": [
+      "sun",
+      "mon",
+      "tue",
+      "wed",
+      "thu"
+    ],
+    "late_arrival_buffer": 15,
+    "work_hours": 7,
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  },
+  {
+    "id": "30000000-0000-0000-0000-000000000004",
+    "location_id": "20000000-0000-0000-0000-000000000002",
+    "name": "الدوام الإداري",
+    "start_time": "09:00:00",
+    "end_time": "17:00:00",
+    "break_start": "13:00:00",
+    "break_duration": 60,
+    "work_days": [
+      "sun",
+      "mon",
+      "tue",
+      "wed",
+      "thu"
+    ],
+    "late_arrival_buffer": 15,
+    "work_hours": 7,
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  },
+  {
+    "id": "30000000-0000-0000-0000-000000000005",
+    "location_id": "20000000-0000-0000-0000-000000000003",
+    "name": "دوام المعرض",
+    "start_time": "10:00:00",
+    "end_time": "22:00:00",
+    "break_start": "15:00:00",
+    "break_duration": 120,
+    "work_days": [
+      "sun",
+      "mon",
+      "tue",
+      "wed",
+      "thu"
+    ],
+    "late_arrival_buffer": 15,
+    "work_hours": 10,
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  },
+  {
+    "id": "30000000-0000-0000-0000-000000000006",
+    "location_id": "20000000-0000-0000-0000-000000000004",
+    "name": "الوردية الصباحية",
+    "start_time": "08:00:00",
+    "end_time": "16:00:00",
+    "break_start": "12:00:00",
+    "break_duration": 60,
+    "work_days": [
+      "sun",
+      "mon",
+      "tue",
+      "wed",
+      "thu"
+    ],
+    "late_arrival_buffer": 15,
+    "work_hours": 7,
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  },
+  {
+    "id": "30000000-0000-0000-0000-000000000007",
+    "location_id": "20000000-0000-0000-0000-000000000005",
+    "name": "الدوام الإداري",
+    "start_time": "09:00:00",
+    "end_time": "17:00:00",
+    "break_start": "13:00:00",
+    "break_duration": 60,
+    "work_days": [
+      "sun",
+      "mon",
+      "tue",
+      "wed",
+      "thu"
+    ],
+    "late_arrival_buffer": 10,
+    "work_hours": 7,
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  },
+  {
+    "id": "30000000-0000-0000-0000-000000000008",
+    "location_id": "20000000-0000-0000-0000-000000000006",
+    "name": "الوردية الصباحية",
+    "start_time": "07:00:00",
+    "end_time": "15:00:00",
+    "break_start": "11:00:00",
+    "break_duration": 60,
+    "work_days": [
+      "sun",
+      "mon",
+      "tue",
+      "wed",
+      "thu"
+    ],
+    "late_arrival_buffer": 15,
+    "work_hours": 7,
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  },
+  {
+    "id": "30000000-0000-0000-0000-000000000009",
+    "location_id": "20000000-0000-0000-0000-000000000007",
+    "name": "الدوام العام",
+    "start_time": "09:00:00",
+    "end_time": "18:00:00",
+    "break_start": "13:00:00",
+    "break_duration": 60,
+    "work_days": [
+      "sun",
+      "mon",
+      "tue",
+      "wed",
+      "thu"
+    ],
+    "late_arrival_buffer": 15,
+    "work_hours": 8,
+    "is_active": true,
+    "created_at": "2025-10-16T02:05:59.249021+00:00",
+    "updated_at": "2025-10-16T02:05:59.249021+00:00"
+  }
+]

@@ -1,0 +1,84 @@
+{
+  "backup_date": "2025-10-18T20:45:14.244Z",
+  "total_tables": 15,
+  "successful": 15,
+  "failed": 0,
+  "total_rows": 197,
+  "tables": [
+    {
+      "table": "companies",
+      "count": 2,
+      "success": true
+    },
+    {
+      "table": "branches",
+      "count": 4,
+      "success": true
+    },
+    {
+      "table": "locations",
+      "count": 7,
+      "success": true
+    },
+    {
+      "table": "location_managers",
+      "count": 4,
+      "success": true
+    },
+    {
+      "table": "users",
+      "count": 21,
+      "success": true
+    },
+    {
+      "table": "employees",
+      "count": 10,
+      "success": true
+    },
+    {
+      "table": "shifts",
+      "count": 9,
+      "success": true
+    },
+    {
+      "table": "qr_codes",
+      "count": 0,
+      "success": true
+    },
+    {
+      "table": "color_codes",
+      "count": 114,
+      "success": true
+    },
+    {
+      "table": "numeric_codes",
+      "count": 23,
+      "success": true
+    },
+    {
+      "table": "attendance_records",
+      "count": 2,
+      "success": true
+    },
+    {
+      "table": "leave_requests",
+      "count": 1,
+      "success": true
+    },
+    {
+      "table": "custom_requests",
+      "count": 0,
+      "success": true
+    },
+    {
+      "table": "verification_codes",
+      "count": 0,
+      "success": true
+    },
+    {
+      "table": "verification_requests",
+      "count": 0,
+      "success": true
+    }
+  ]
+}
