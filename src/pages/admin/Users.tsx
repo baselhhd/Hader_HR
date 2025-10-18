@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Users as UsersIcon, Search, Plus, Edit, Trash2 } from "lucide-react";
+import { getSession } from "@/lib/auth";
+import { getCurrentUserCompanyId } from "@/utils/dataIsolation";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +53,7 @@ const Users = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [userCompanyId, setUserCompanyId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     username: "",
     full_name: "",
@@ -61,7 +64,25 @@ const Users = () => {
   });
 
   useEffect(() => {
-    fetchUsers();
+    const initData = async () => {
+      const session = getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
+      // Get user's company_id for data isolation
+      const companyId = await getCurrentUserCompanyId(session.userId);
+      if (!companyId) {
+        toast.error("لم يتم العثور على معلومات الشركة");
+        return;
+      }
+
+      setUserCompanyId(companyId);
+      fetchUsers(companyId);
+    };
+
+    initData();
   }, []);
 
   useEffect(() => {
@@ -78,14 +99,16 @@ const Users = () => {
     }
   }, [searchTerm, users]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (companyId: string) => {
     try {
       setLoading(true);
 
+      // Only fetch users for the admin's company
       const { data, error } = await supabase
         .from("users")
         .select("*")
-        .order("created_at", { ascending: false });
+        .eq("company_id", companyId)
+        .order("created_at", { ascending: false});
 
       if (error) {
         console.error("Error fetching users:", error);
@@ -162,7 +185,12 @@ const Users = () => {
 
         toast.success("تم تحديث المستخدم بنجاح");
       } else {
-        // Add new user
+        // Add new user - with company_id from current admin
+        if (!userCompanyId) {
+          toast.error("غير مصرح لك بإضافة مستخدمين");
+          return;
+        }
+
         const { error } = await supabase.from("users").insert({
           username: formData.username,
           full_name: formData.full_name || null,
@@ -170,6 +198,7 @@ const Users = () => {
           phone: formData.phone || null,
           password: formData.password, // In real app, this should be hashed
           role: formData.role,
+          company_id: userCompanyId, // Force use of admin's company
         });
 
         if (error) {
@@ -191,7 +220,9 @@ const Users = () => {
       });
       setEditingUser(null);
       setIsDialogOpen(false);
-      fetchUsers();
+      if (userCompanyId) {
+        fetchUsers(userCompanyId);
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
@@ -212,12 +243,24 @@ const Users = () => {
   };
 
   const handleDelete = async (userId: string, username: string) => {
+    // Security: Verify the user belongs to admin's company before deleting
+    const userToDelete = users.find(u => u.id === userId);
+    if (!userToDelete || !userCompanyId) {
+      toast.error("غير مصرح لك بحذف هذا المستخدم");
+      return;
+    }
+
     if (!confirm(`هل أنت متأكد من حذف المستخدم "${username}"؟\n\nتحذير: سيتم حذف جميع سجلات الحضور والطلبات المرتبطة به!`)) {
       return;
     }
 
     try {
-      const { error } = await supabase.from("users").delete().eq("id", userId);
+      // Delete with company_id check for extra security
+      const { error } = await supabase
+        .from("users")
+        .delete()
+        .eq("id", userId)
+        .eq("company_id", userCompanyId);
 
       if (error) {
         console.error("Error deleting user:", error);
@@ -226,7 +269,9 @@ const Users = () => {
       }
 
       toast.success("تم حذف المستخدم بنجاح");
-      fetchUsers();
+      if (userCompanyId) {
+        fetchUsers(userCompanyId);
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");

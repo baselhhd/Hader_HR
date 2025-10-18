@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getSession } from "@/lib/auth";
+import { getCurrentUserCompanyId } from "@/utils/dataIsolation";
 import {
   Dialog,
   DialogContent,
@@ -58,14 +60,38 @@ const Branches = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
+  const [userCompanyId, setUserCompanyId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     company_id: "",
   });
 
   useEffect(() => {
-    fetchCompanies();
-    fetchBranches();
+    const initData = async () => {
+      const session = getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
+      // Get user's company_id for data isolation
+      const companyId = await getCurrentUserCompanyId(session.userId);
+      if (!companyId) {
+        toast.error("لم يتم العثور على معلومات الشركة");
+        return;
+      }
+
+      setUserCompanyId(companyId);
+
+      // Auto-set company_id in form (for super_admin creating branches)
+      setFormData(prev => ({ ...prev, company_id: companyId }));
+
+      // Fetch data with company filter
+      fetchCompanies(companyId);
+      fetchBranches(companyId);
+    };
+
+    initData();
   }, []);
 
   useEffect(() => {
@@ -81,11 +107,13 @@ const Branches = () => {
     }
   }, [searchTerm, branches]);
 
-  const fetchCompanies = async () => {
+  const fetchCompanies = async (companyId: string) => {
     try {
+      // Super admin can only see their own company
       const { data, error } = await supabase
         .from("companies")
         .select("id, name")
+        .eq("id", companyId)
         .order("name");
 
       if (error) {
@@ -99,10 +127,11 @@ const Branches = () => {
     }
   };
 
-  const fetchBranches = async () => {
+  const fetchBranches = async (companyId: string) => {
     try {
       setLoading(true);
 
+      // Only fetch branches for the user's company
       const { data, error } = await supabase
         .from("branches")
         .select(`
@@ -114,6 +143,7 @@ const Branches = () => {
             name
           )
         `)
+        .eq("company_id", companyId)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -157,16 +187,28 @@ const Branches = () => {
       return;
     }
 
+    // Security: Verify user can only create/update branches for their own company
+    if (!userCompanyId || formData.company_id !== userCompanyId) {
+      toast.error("غير مصرح لك بهذا الإجراء");
+      return;
+    }
+
     try {
       if (editingBranch) {
-        // Update
+        // Update - verify the branch belongs to the same company
+        if (editingBranch.company_id !== userCompanyId) {
+          toast.error("غير مصرح لك بتعديل هذا الفرع");
+          return;
+        }
+
         const { error } = await supabase
           .from("branches")
           .update({
             name: formData.name,
             company_id: formData.company_id,
           })
-          .eq("id", editingBranch.id);
+          .eq("id", editingBranch.id)
+          .eq("company_id", userCompanyId); // Double-check at DB level
 
         if (error) {
           console.error("Error updating branch:", error);
@@ -176,10 +218,10 @@ const Branches = () => {
 
         toast.success("تم تحديث الفرع بنجاح");
       } else {
-        // Add new
+        // Add new - company_id is auto-set to userCompanyId
         const { error } = await supabase.from("branches").insert({
           name: formData.name,
-          company_id: formData.company_id,
+          company_id: userCompanyId, // Force use of user's company
         });
 
         if (error) {
@@ -191,10 +233,12 @@ const Branches = () => {
         toast.success("تم إضافة الفرع بنجاح");
       }
 
-      setFormData({ name: "", company_id: "" });
+      setFormData({ name: "", company_id: userCompanyId });
       setEditingBranch(null);
       setIsDialogOpen(false);
-      fetchBranches();
+      if (userCompanyId) {
+        fetchBranches(userCompanyId);
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
@@ -211,6 +255,13 @@ const Branches = () => {
   };
 
   const handleDelete = async (branchId: string, branchName: string) => {
+    // Security: Verify the branch belongs to user's company before deleting
+    const branchToDelete = branches.find(b => b.id === branchId);
+    if (!branchToDelete || !userCompanyId || branchToDelete.company_id !== userCompanyId) {
+      toast.error("غير مصرح لك بحذف هذا الفرع");
+      return;
+    }
+
     if (
       !confirm(
         `هل أنت متأكد من حذف فرع "${branchName}"؟\n\nتحذير: سيتم حذف جميع المواقع المرتبطة به!`
@@ -220,7 +271,12 @@ const Branches = () => {
     }
 
     try {
-      const { error } = await supabase.from("branches").delete().eq("id", branchId);
+      // Delete with company_id check for extra security
+      const { error } = await supabase
+        .from("branches")
+        .delete()
+        .eq("id", branchId)
+        .eq("company_id", userCompanyId);
 
       if (error) {
         console.error("Error deleting branch:", error);
@@ -229,7 +285,9 @@ const Branches = () => {
       }
 
       toast.success("تم حذف الفرع بنجاح");
-      fetchBranches();
+      if (userCompanyId) {
+        fetchBranches(userCompanyId);
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
@@ -239,7 +297,7 @@ const Branches = () => {
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     setEditingBranch(null);
-    setFormData({ name: "", company_id: "" });
+    setFormData({ name: "", company_id: userCompanyId || "" });
   };
 
   return (
@@ -290,8 +348,8 @@ const Branches = () => {
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label htmlFor="company">الشركة *</Label>
+                {/* Company field - hidden for super_admin (auto-set to their company) */}
+                <div className="hidden">
                   <Select
                     value={formData.company_id}
                     onValueChange={(value) =>

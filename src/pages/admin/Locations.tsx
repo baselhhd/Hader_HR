@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getSession } from "@/lib/auth";
+import { getCurrentUserCompanyId } from "@/utils/dataIsolation";
 import {
   Dialog,
   DialogContent,
@@ -66,6 +68,7 @@ const Locations = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
+  const [userCompanyId, setUserCompanyId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     branch_id: "",
@@ -76,8 +79,28 @@ const Locations = () => {
   });
 
   useEffect(() => {
-    fetchBranches();
-    fetchLocations();
+    const initData = async () => {
+      const session = getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
+      // Get user's company_id for data isolation
+      const companyId = await getCurrentUserCompanyId(session.userId);
+      if (!companyId) {
+        toast.error("لم يتم العثور على معلومات الشركة");
+        return;
+      }
+
+      setUserCompanyId(companyId);
+
+      // Fetch data with company filter
+      fetchBranches(companyId);
+      fetchLocations(companyId);
+    };
+
+    initData();
   }, []);
 
   useEffect(() => {
@@ -94,8 +117,9 @@ const Locations = () => {
     }
   }, [searchTerm, locations]);
 
-  const fetchBranches = async () => {
+  const fetchBranches = async (companyId: string) => {
     try {
+      // Only fetch branches for the user's company
       const { data, error } = await supabase
         .from("branches")
         .select(`
@@ -106,6 +130,7 @@ const Locations = () => {
             name
           )
         `)
+        .eq("company_id", companyId)
         .order("name");
 
       if (error) {
@@ -119,10 +144,11 @@ const Locations = () => {
     }
   };
 
-  const fetchLocations = async () => {
+  const fetchLocations = async (companyId: string) => {
     try {
       setLoading(true);
 
+      // Only fetch locations for the user's company
       const { data, error } = await supabase
         .from("locations")
         .select(`
@@ -141,6 +167,7 @@ const Locations = () => {
             )
           )
         `)
+        .eq("company_id", companyId)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -182,12 +209,16 @@ const Locations = () => {
 
   const handleBranchChange = (branchId: string) => {
     const selectedBranch = branches.find((b) => b.id === branchId);
-    if (selectedBranch) {
+
+    // Security: Verify the selected branch belongs to user's company
+    if (selectedBranch && selectedBranch.company_id === userCompanyId) {
       setFormData({
         ...formData,
         branch_id: branchId,
         company_id: selectedBranch.company_id,
       });
+    } else {
+      toast.error("غير مصرح لك باختيار هذا الفرع");
     }
   };
 
@@ -196,6 +227,12 @@ const Locations = () => {
 
     if (!formData.name.trim() || !formData.branch_id || !formData.lat || !formData.lng) {
       toast.error("يرجى إدخال جميع البيانات المطلوبة");
+      return;
+    }
+
+    // Security: Verify company_id matches user's company
+    if (!userCompanyId || formData.company_id !== userCompanyId) {
+      toast.error("غير مصرح لك بهذا الإجراء");
       return;
     }
 
@@ -210,7 +247,12 @@ const Locations = () => {
 
     try {
       if (editingLocation) {
-        // Update
+        // Update - verify the location belongs to the same company
+        if (editingLocation.company_id !== userCompanyId) {
+          toast.error("غير مصرح لك بتعديل هذا الموقع");
+          return;
+        }
+
         const { error } = await supabase
           .from("locations")
           .update({
@@ -221,7 +263,8 @@ const Locations = () => {
             lng,
             gps_radius: radius,
           })
-          .eq("id", editingLocation.id);
+          .eq("id", editingLocation.id)
+          .eq("company_id", userCompanyId); // Double-check at DB level
 
         if (error) {
           console.error("Error updating location:", error);
@@ -231,11 +274,11 @@ const Locations = () => {
 
         toast.success("تم تحديث الموقع بنجاح");
       } else {
-        // Add new
+        // Add new - company_id is verified above
         const { error } = await supabase.from("locations").insert({
           name: formData.name,
           branch_id: formData.branch_id,
-          company_id: formData.company_id,
+          company_id: userCompanyId, // Force use of user's company
           lat,
           lng,
           gps_radius: radius,
@@ -250,10 +293,12 @@ const Locations = () => {
         toast.success("تم إضافة الموقع بنجاح");
       }
 
-      setFormData({ name: "", branch_id: "", company_id: "", lat: "", lng: "", gps_radius: "100" });
+      setFormData({ name: "", branch_id: "", company_id: userCompanyId || "", lat: "", lng: "", gps_radius: "100" });
       setEditingLocation(null);
       setIsDialogOpen(false);
-      fetchLocations();
+      if (userCompanyId) {
+        fetchLocations(userCompanyId);
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
@@ -274,12 +319,24 @@ const Locations = () => {
   };
 
   const handleDelete = async (locationId: string, locationName: string) => {
+    // Security: Verify the location belongs to user's company before deleting
+    const locationToDelete = locations.find(l => l.id === locationId);
+    if (!locationToDelete || !userCompanyId || locationToDelete.company_id !== userCompanyId) {
+      toast.error("غير مصرح لك بحذف هذا الموقع");
+      return;
+    }
+
     if (!confirm(`هل أنت متأكد من حذف موقع "${locationName}"؟`)) {
       return;
     }
 
     try {
-      const { error } = await supabase.from("locations").delete().eq("id", locationId);
+      // Delete with company_id check for extra security
+      const { error } = await supabase
+        .from("locations")
+        .delete()
+        .eq("id", locationId)
+        .eq("company_id", userCompanyId);
 
       if (error) {
         console.error("Error deleting location:", error);
@@ -288,7 +345,9 @@ const Locations = () => {
       }
 
       toast.success("تم حذف الموقع بنجاح");
-      fetchLocations();
+      if (userCompanyId) {
+        fetchLocations(userCompanyId);
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
@@ -298,7 +357,7 @@ const Locations = () => {
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     setEditingLocation(null);
-    setFormData({ name: "", branch_id: "", company_id: "", lat: "", lng: "", gps_radius: "100" });
+    setFormData({ name: "", branch_id: "", company_id: userCompanyId || "", lat: "", lng: "", gps_radius: "100" });
   };
 
   const openInMaps = (lat: number, lng: number) => {

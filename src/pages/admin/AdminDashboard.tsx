@@ -20,6 +20,7 @@ import { AdminCharts } from "@/components/AdminCharts";
 import { useUserLocationInfo } from "@/hooks/useUserLocationInfo";
 import { UserLocationDisplay } from "@/components/UserLocationDisplay";
 import { getSession } from "@/lib/auth";
+import { getCurrentUserCompanyId } from "@/utils/dataIsolation";
 
 interface SystemStats {
   totalCompanies: number;
@@ -52,8 +53,13 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchUserInfo();
-    fetchSystemStats();
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      fetchSystemStats();
+    }
+  }, [userId]);
 
   const fetchUserInfo = async () => {
     // Check for local session first
@@ -99,7 +105,16 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
 
-      // Get counts for all entities
+      // Get user's company_id for data isolation
+      const userCompanyId = await getCurrentUserCompanyId(userId);
+
+      if (!userCompanyId) {
+        toast.error("لم يتم العثور على معلومات الشركة");
+        setLoading(false);
+        return;
+      }
+
+      // Get counts for company-specific entities
       const [
         { count: totalCompanies },
         { count: totalBranches },
@@ -108,19 +123,32 @@ const AdminDashboard = () => {
         { count: totalEmployees },
         { count: totalShifts },
       ] = await Promise.all([
-        supabase.from("companies").select("*", { count: "exact", head: true }),
-        supabase.from("branches").select("*", { count: "exact", head: true }),
-        supabase.from("locations").select("*", { count: "exact", head: true }),
-        supabase.from("users").select("*", { count: "exact", head: true }),
-        supabase.from("employees").select("*", { count: "exact", head: true }),
-        supabase.from("shifts").select("*", { count: "exact", head: true }),
+        // Company: يرى شركته فقط
+        supabase.from("companies").select("*", { count: "exact", head: true })
+          .eq('id', userCompanyId),
+        // Branches: فروع شركته فقط
+        supabase.from("branches").select("*", { count: "exact", head: true })
+          .eq('company_id', userCompanyId),
+        // Locations: مواقع شركته فقط
+        supabase.from("locations").select("*", { count: "exact", head: true })
+          .eq('company_id', userCompanyId),
+        // Users: مستخدمي شركته فقط
+        supabase.from("users").select("*", { count: "exact", head: true })
+          .eq('company_id', userCompanyId),
+        // Employees: موظفي شركته فقط (عبر users)
+        supabase.from("employees").select("*, users!inner(company_id)", { count: "exact", head: true })
+          .eq('users.company_id', userCompanyId),
+        // Shifts: ورديات شركته فقط (عبر locations)
+        supabase.from("shifts").select("*, locations!inner(company_id)", { count: "exact", head: true })
+          .eq('locations.company_id', userCompanyId),
       ]);
 
-      // Get active users (logged in today)
+      // Get active users (logged in today) - من شركته فقط
       const today = new Date().toISOString().split("T")[0];
       const { count: activeUsers } = await supabase
         .from("attendance_records")
-        .select("user_id", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
+        .eq('company_id', userCompanyId)
         .gte("check_in", `${today}T00:00:00`)
         .lte("check_in", `${today}T23:59:59`);
 

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { getSession } from "@/lib/auth";
+import { getCurrentUserCompanyId } from "@/utils/dataIsolation";
 import {
   Dialog,
   DialogContent,
@@ -44,13 +46,32 @@ const Companies = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+  const [userCompanyId, setUserCompanyId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
   });
 
   useEffect(() => {
-    fetchCompanies();
+    const initData = async () => {
+      const session = getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
+      // Get user's company_id for data isolation
+      const companyId = await getCurrentUserCompanyId(session.userId);
+      if (!companyId) {
+        toast.error("لم يتم العثور على معلومات الشركة");
+        return;
+      }
+
+      setUserCompanyId(companyId);
+      fetchCompanies(companyId);
+    };
+
+    initData();
   }, []);
 
   useEffect(() => {
@@ -64,13 +85,15 @@ const Companies = () => {
     }
   }, [searchTerm, companies]);
 
-  const fetchCompanies = async () => {
+  const fetchCompanies = async (companyId: string) => {
     try {
       setLoading(true);
 
+      // Super admin can only see their own company
       const { data, error } = await supabase
         .from("companies")
         .select("*")
+        .eq("id", companyId)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -79,7 +102,7 @@ const Companies = () => {
         return;
       }
 
-      // Fetch counts for each company
+      // Fetch counts for the company
       const companiesWithCounts = await Promise.all(
         (data || []).map(async (company) => {
           const [{ count: branchCount }, { count: employeeCount }] = await Promise.all([
@@ -88,7 +111,7 @@ const Companies = () => {
               .select("*", { count: "exact", head: true })
               .eq("company_id", company.id),
             supabase
-              .from("employees")
+              .from("users")
               .select("*", { count: "exact", head: true })
               .eq("company_id", company.id),
           ]);
@@ -121,45 +144,43 @@ const Companies = () => {
       return;
     }
 
+    // Security: Super admin can only edit their own company, not create new ones
+    if (!editingCompany) {
+      toast.error("لا يمكنك إضافة شركات جديدة. يمكنك فقط تعديل معلومات شركتك.");
+      return;
+    }
+
+    if (!userCompanyId || editingCompany.id !== userCompanyId) {
+      toast.error("غير مصرح لك بتعديل هذه الشركة");
+      return;
+    }
+
     try {
-      if (editingCompany) {
-        // Update existing company
-        const { error } = await supabase
-          .from("companies")
-          .update({
-            name: formData.name,
-            description: formData.description || null,
-          })
-          .eq("id", editingCompany.id);
-
-        if (error) {
-          console.error("Error updating company:", error);
-          toast.error("خطأ في تحديث الشركة");
-          return;
-        }
-
-        toast.success("تم تحديث الشركة بنجاح");
-      } else {
-        // Add new company
-        const { error } = await supabase.from("companies").insert({
+      // Update existing company - only allowed to update own company
+      const { error } = await supabase
+        .from("companies")
+        .update({
           name: formData.name,
           description: formData.description || null,
-        });
+        })
+        .eq("id", editingCompany.id)
+        .eq("id", userCompanyId); // Double-check at DB level
 
-        if (error) {
-          console.error("Error adding company:", error);
-          toast.error("خطأ في إضافة الشركة");
-          return;
-        }
-
-        toast.success("تم إضافة الشركة بنجاح");
+      if (error) {
+        console.error("Error updating company:", error);
+        toast.error("خطأ في تحديث الشركة");
+        return;
       }
+
+      toast.success("تم تحديث الشركة بنجاح");
 
       // Reset form and close dialog
       setFormData({ name: "", description: "" });
       setEditingCompany(null);
       setIsDialogOpen(false);
-      fetchCompanies();
+      if (userCompanyId) {
+        fetchCompanies(userCompanyId);
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
@@ -176,28 +197,9 @@ const Companies = () => {
   };
 
   const handleDelete = async (companyId: string, companyName: string) => {
-    if (!confirm(`هل أنت متأكد من حذف شركة "${companyName}"؟\n\nتحذير: سيتم حذف جميع الفروع والمواقع المرتبطة بها!`)) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from("companies")
-        .delete()
-        .eq("id", companyId);
-
-      if (error) {
-        console.error("Error deleting company:", error);
-        toast.error("خطأ في حذف الشركة");
-        return;
-      }
-
-      toast.success("تم حذف الشركة بنجاح");
-      fetchCompanies();
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("خطأ غير متوقع");
-    }
+    // Security: Super admin cannot delete their own company or any company
+    toast.error("لا يمكن حذف الشركة. تواصل مع الدعم الفني لحذف الشركة.");
+    return;
   };
 
   const handleDialogClose = () => {
@@ -225,7 +227,7 @@ const Companies = () => {
           </div>
         </div>
 
-        {/* Search and Add */}
+        {/* Search - No Add button (super_admin cannot create companies) */}
         <div className="flex gap-4 items-center">
           <div className="flex-1 relative">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -237,12 +239,10 @@ const Companies = () => {
             />
           </div>
 
+          {/* Edit Dialog - Only for editing own company */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2 bg-purple-600 hover:bg-purple-700">
-                <Plus className="w-4 h-4" />
-                إضافة شركة جديدة
-              </Button>
+              <Button className="hidden">Hidden</Button>
             </DialogTrigger>
             <DialogContent dir="rtl">
               <DialogHeader>
@@ -329,14 +329,7 @@ const Companies = () => {
           ) : filteredCompanies.length === 0 ? (
             <div className="text-center py-12">
               <Building2 className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p className="text-gray-500">لا توجد شركات</p>
-              <Button
-                className="mt-4 gap-2"
-                onClick={() => setIsDialogOpen(true)}
-              >
-                <Plus className="w-4 h-4" />
-                إضافة أول شركة
-              </Button>
+              <p className="text-gray-500">لم يتم العثور على شركتك</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -374,15 +367,7 @@ const Companies = () => {
                             <Edit className="w-4 h-4" />
                             تعديل
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="gap-1 text-red-600 border-red-600 hover:bg-red-50"
-                            onClick={() => handleDelete(company.id, company.name)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            حذف
-                          </Button>
+                          {/* Delete button hidden - super_admin cannot delete companies */}
                         </div>
                       </TableCell>
                     </TableRow>

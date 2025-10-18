@@ -19,6 +19,7 @@ import { AttendanceChart } from "@/components/AttendanceChart";
 import { useUserLocationInfo } from "@/hooks/useUserLocationInfo";
 import { UserLocationDisplay } from "@/components/UserLocationDisplay";
 import { getSession } from "@/lib/auth";
+import { getCurrentUserCompanyId } from "@/utils/dataIsolation";
 
 interface DashboardStats {
   totalEmployees: number;
@@ -82,24 +83,41 @@ const HRDashboard = () => {
     try {
       setLoading(true);
 
-      // Get total employees
+      // Get HR user's company_id for data isolation
+      const session = getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
+      const userCompanyId = await getCurrentUserCompanyId(session.userId);
+      if (!userCompanyId) {
+        toast.error("لم يتم العثور على معلومات الشركة");
+        setLoading(false);
+        return;
+      }
+
+      // Get total employees for this company (via users table)
       const { count: totalEmployees } = await supabase
         .from("employees")
-        .select("*", { count: "exact", head: true });
+        .select("*, users!inner(company_id)", { count: "exact", head: true })
+        .eq("users.company_id", userCompanyId);
 
-      // Get today's attendance (present)
+      // Get today's attendance (present) for this company
       const today = new Date().toISOString().split("T")[0];
       const { count: presentToday } = await supabase
         .from("attendance_records")
         .select("*", { count: "exact", head: true })
+        .eq("company_id", userCompanyId)
         .gte("check_in", `${today}T00:00:00`)
         .lte("check_in", `${today}T23:59:59`);
 
-      // Get pending leave requests
+      // Get pending leave requests for this company (via employees -> users)
       const { count: pendingRequests } = await supabase
         .from("leave_requests")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "pending");
+        .select("*, employees!inner(users!inner(company_id))", { count: "exact", head: true })
+        .eq("status", "pending")
+        .eq("employees.users.company_id", userCompanyId);
 
       setStats({
         totalEmployees: totalEmployees || 0,

@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getSession } from "@/lib/auth";
+import { getCurrentUserCompanyId, getCompanyLocationIds } from "@/utils/dataIsolation";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +41,8 @@ const Shifts = () => {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
+  const [userCompanyId, setUserCompanyId] = useState<string | null>(null);
+  const [companyLocationIds, setCompanyLocationIds] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     start_time: "",
@@ -46,16 +50,41 @@ const Shifts = () => {
   });
 
   useEffect(() => {
-    fetchShifts();
+    const initData = async () => {
+      const session = getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+
+      // Get user's company_id for data isolation
+      const companyId = await getCurrentUserCompanyId(session.userId);
+      if (!companyId) {
+        toast.error("لم يتم العثور على معلومات الشركة");
+        return;
+      }
+
+      setUserCompanyId(companyId);
+
+      // Get all location IDs for this company
+      const locationIds = await getCompanyLocationIds(companyId);
+      setCompanyLocationIds(locationIds);
+
+      fetchShifts(locationIds);
+    };
+
+    initData();
   }, []);
 
-  const fetchShifts = async () => {
+  const fetchShifts = async (locationIds: string[]) => {
     try {
       setLoading(true);
 
+      // Only fetch shifts for locations belonging to the admin's company
       const { data, error } = await supabase
         .from("shifts")
         .select("*")
+        .in("location_id", locationIds.length > 0 ? locationIds : [''])
         .order("start_time", { ascending: true });
 
       if (error) {
@@ -144,7 +173,9 @@ const Shifts = () => {
       setFormData({ name: "", start_time: "", end_time: "" });
       setEditingShift(null);
       setIsDialogOpen(false);
-      fetchShifts();
+      if (companyLocationIds.length > 0) {
+        fetchShifts(companyLocationIds);
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
@@ -162,12 +193,24 @@ const Shifts = () => {
   };
 
   const handleDelete = async (shiftId: string, shiftName: string) => {
+    // Security: Verify the shift belongs to a location in admin's company
+    const shiftToDelete = shifts.find(s => s.id === shiftId);
+    if (!shiftToDelete || companyLocationIds.length === 0) {
+      toast.error("غير مصرح لك بحذف هذه الوردية");
+      return;
+    }
+
     if (!confirm(`هل أنت متأكد من حذف وردية "${shiftName}"؟`)) {
       return;
     }
 
     try {
-      const { error } = await supabase.from("shifts").delete().eq("id", shiftId);
+      // Delete with location_id check for extra security
+      const { error } = await supabase
+        .from("shifts")
+        .delete()
+        .eq("id", shiftId)
+        .in("location_id", companyLocationIds);
 
       if (error) {
         console.error("Error deleting shift:", error);
@@ -176,7 +219,9 @@ const Shifts = () => {
       }
 
       toast.success("تم حذف الوردية بنجاح");
-      fetchShifts();
+      if (companyLocationIds.length > 0) {
+        fetchShifts(companyLocationIds);
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("خطأ غير متوقع");
