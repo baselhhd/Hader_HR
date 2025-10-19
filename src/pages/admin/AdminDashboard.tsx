@@ -72,12 +72,6 @@ const AdminDashboard = () => {
         navigate("/login");
         return;
       }
-      // Check if user is super_admin
-      if (session.role !== "admin") {
-        toast.error("غير مصرح لك بالدخول لهذه الصفحة");
-        navigate("/login");
-        return;
-      }
       setUserId(session.userId);
       setUserRole(session.role);
       setUserName(session.fullName || session.username);
