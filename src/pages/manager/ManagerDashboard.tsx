@@ -11,6 +11,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { getSession, clearSession } from "@/lib/auth";
 import { useUserLocationInfo } from "@/hooks/useUserLocationInfo";
 import { UserLocationDisplay } from "@/components/UserLocationDisplay";
+import AttendanceStatus from "@/components/manager/AttendanceStatus";
 
 interface ManagerData {
   location_id: string;
@@ -476,29 +477,8 @@ const ManagerDashboard = () => {
             </div>
           </Card>
         )}
-
-        {/* Recent Attendance */}
-        <Card className="p-6">
-          <h3 className="text-lg font-bold mb-4">📋 آخر التسجيلات</h3>
-          <div className="space-y-3">
-            {recentAttendance.map((record) => (
-              <div key={record.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                <div>
-                  <p className="font-medium">{record.users?.full_name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(record.check_in), "hh:mm a")}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium px-2 py-1 bg-background rounded-full">
-                    {record.method_used === "qr" ? "QR" : record.method_used === "color" ? "لون" : "كود"}
-                  </span>
-                  {record.status === "approved" ? "✓" : record.status === "suspicious" ? "⚠️" : "⏳"}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
+        {/* Attendance Status - NEW */}
+        {location && <AttendanceStatus locationId={location.id} />}
       </div>
     </div>
   );

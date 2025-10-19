@@ -83,7 +83,6 @@ const AdminDashboard = () => {
       setUserName(session.fullName || session.username);
     } else {
       navigate("/login");
-      }
     }
   };
 
