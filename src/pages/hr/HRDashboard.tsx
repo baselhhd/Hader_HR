@@ -127,16 +127,16 @@ const HRDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-3 md:p-6" dir="rtl">
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
+      <div className="max-w-7xl mx-auto mb-4 md:mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
               لوحة تحكم الموارد البشرية
             </h1>
-            <p className="text-gray-600">مرحباً، {userName}</p>
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="text-sm md:text-base text-gray-600">مرحباً، {userName}</p>
+            <p className="text-gray-500 text-xs md:text-sm mt-1">
               <UserLocationDisplay
                 companyName={locationInfo.company?.name}
                 branchName={locationInfo.branch?.name}
@@ -147,50 +147,50 @@ const HRDashboard = () => {
           <Button
             onClick={handleLogout}
             variant="outline"
-            className="gap-2"
+            className="gap-1 md:gap-2 text-sm md:text-base"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3 h-3 md:w-4 md:h-4" />
             تسجيل الخروج
           </Button>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-3 md:space-y-4 lg:space-y-6">
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+          <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">إجمالي الموظفين</p>
-                <p className="text-3xl font-bold text-gray-800">
+                <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">إجمالي الموظفين</p>
+                <p className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800">
                   {loading ? "..." : stats.totalEmployees}
                 </p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Users className="w-8 h-8 text-blue-600" />
+              <div className="p-2 md:p-2.5 lg:p-3 bg-blue-100 rounded-full">
+                <Users className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-blue-600" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+          <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">الحضور اليوم</p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">الحضور اليوم</p>
+                <p className="text-xl md:text-2xl lg:text-3xl font-bold text-green-600">
                   {loading ? "..." : stats.presentToday}
                 </p>
               </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <UserCheck className="w-8 h-8 text-green-600" />
+              <div className="p-2 md:p-2.5 lg:p-3 bg-green-100 rounded-full">
+                <UserCheck className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-green-600" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+          <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">الغياب اليوم</p>
-                <p className="text-3xl font-bold text-red-600">
+                <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">الغياب اليوم</p>
+                <p className="text-xl md:text-2xl lg:text-3xl font-bold text-red-600">
                   {loading ? "..." : stats.absentToday}
                 </p>
               </div>
@@ -200,16 +200,16 @@ const HRDashboard = () => {
             </div>
           </Card>
 
-          <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+          <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">طلبات معلقة</p>
-                <p className="text-3xl font-bold text-orange-600">
+                <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">طلبات معلقة</p>
+                <p className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-600">
                   {loading ? "..." : stats.pendingRequests}
                 </p>
               </div>
-              <div className="p-3 bg-orange-100 rounded-full">
-                <Clock className="w-8 h-8 text-orange-600" />
+              <div className="p-2 md:p-2.5 lg:p-3 bg-orange-100 rounded-full">
+                <Clock className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-orange-600" />
               </div>
             </div>
           </Card>
@@ -217,7 +217,7 @@ const HRDashboard = () => {
 
         {/* Quick Actions */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">الإجراءات السريعة</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">الإجراءات السريعة</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card
               className="p-6 text-center hover:shadow-lg transition-all cursor-pointer hover:scale-105"
@@ -268,14 +268,14 @@ const HRDashboard = () => {
 
         {/* Charts Section */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">التحليلات والرسوم البيانية</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">التحليلات والرسوم البيانية</h2>
           <AttendanceChart />
         </div>
 
         {/* Recent Activity */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">النشاطات الأخيرة</h2>
-          <Card className="p-6 bg-white">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">النشاطات الأخيرة</h2>
+          <Card className="p-3 md:p-4 lg:p-5 bg-white">
             <div className="text-center text-gray-500 py-8">
               <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <p>لا توجد نشاطات حديثة</p>

@@ -190,10 +190,10 @@ const EmployeeDashboard = () => {
   return (
     <div className="min-h-screen bg-background pb-20" dir="rtl">
       {/* Header */}
-      <div className="bg-gradient-header text-white p-6 pb-16 rounded-b-3xl shadow-lg">
+      <div className="bg-gradient-header text-white p-4 md:p-5 lg:p-6 pb-12 md:pb-14 lg:pb-16 rounded-b-3xl shadow-lg">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold mb-1">
+            <h1 className="text-xl md:text-2xl font-bold mb-1">
               👋 مرحباً {profile?.full_name?.split(" ")[0]}
             </h1>
             <p className="text-white/90 text-sm">
@@ -220,13 +220,13 @@ const EmployeeDashboard = () => {
         </p>
       </div>
 
-      <div className="px-4 -mt-12 space-y-4">
+      <div className="px-3 md:px-4 -mt-10 md:-mt-11 lg:-mt-12 space-y-2 md:space-y-3 lg:space-y-4">
         {/* Status Card */}
-        <Card className="p-6 card-elevated animate-slide-up">
+        <Card className="p-4 md:p-5 lg:p-6 card-elevated animate-slide-up">
           {!todayAttendance ? (
             <>
               <div className="flex items-center justify-center mb-4">
-                <div className="w-16 h-16 bg-warning/10 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-warning/10 rounded-full flex items-center justify-center">
                   <AlertCircle className="w-8 h-8 text-warning" />
                 </div>
               </div>
@@ -247,7 +247,7 @@ const EmployeeDashboard = () => {
           ) : (
             <>
               <div className="flex items-center justify-center mb-4">
-                <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-success/10 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-8 h-8 text-success" />
                 </div>
               </div>
@@ -263,7 +263,7 @@ const EmployeeDashboard = () => {
               {!todayAttendance.check_out && (
                 <Button
                   variant="outline"
-                  className="w-full h-12 text-lg font-bold border-2"
+                  className="w-full h-10 md:h-11 lg:h-12 text-base md:text-lg font-bold border-2"
                 >
                   ⏱️ تسجيل خروج
                 </Button>
@@ -273,48 +273,48 @@ const EmployeeDashboard = () => {
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-4 gap-2 md:gap-2.5 lg:gap-3">
           <Card
-            className="p-4 text-center hover-scale cursor-pointer"
+            className="p-2.5 md:p-3 lg:p-4 text-center hover:scale-[1.02] md:hover:scale-105 transition-transform cursor-pointer"
             onClick={() => navigate("/employee/profile")}
           >
-            <User className="w-8 h-8 text-primary mx-auto mb-2" />
-            <p className="text-sm font-medium">الملف الشخصي</p>
+            <User className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-primary mx-auto mb-1 md:mb-1.5 lg:mb-2" />
+            <p className="text-[10px] md:text-xs lg:text-sm font-medium">الملف الشخصي</p>
           </Card>
           <Card
-            className="p-4 text-center hover-scale cursor-pointer"
+            className="p-2.5 md:p-3 lg:p-4 text-center hover:scale-[1.02] md:hover:scale-105 transition-transform cursor-pointer"
             onClick={() => navigate("/employee/leave-request")}
           >
-            <CalendarDays className="w-8 h-8 text-primary mx-auto mb-2" />
-            <p className="text-sm font-medium">طلب إجازة</p>
+            <CalendarDays className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-primary mx-auto mb-1 md:mb-1.5 lg:mb-2" />
+            <p className="text-[10px] md:text-xs lg:text-sm font-medium">طلب إجازة</p>
           </Card>
           <Card
-            className="p-4 text-center hover-scale cursor-pointer"
+            className="p-2.5 md:p-3 lg:p-4 text-center hover:scale-[1.02] md:hover:scale-105 transition-transform cursor-pointer"
             onClick={() => navigate("/employee/custom-request")}
           >
-            <FileText className="w-8 h-8 text-primary mx-auto mb-2" />
-            <p className="text-sm font-medium">طلب خاص</p>
+            <FileText className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-primary mx-auto mb-1 md:mb-1.5 lg:mb-2" />
+            <p className="text-[10px] md:text-xs lg:text-sm font-medium">طلب خاص</p>
           </Card>
           <Card
-            className="p-4 text-center hover-scale cursor-pointer"
+            className="p-2.5 md:p-3 lg:p-4 text-center hover:scale-[1.02] md:hover:scale-105 transition-transform cursor-pointer"
             onClick={() => navigate("/employee/attendance")}
           >
-            <BarChart3 className="w-8 h-8 text-primary mx-auto mb-2" />
-            <p className="text-sm font-medium">سجل الحضور</p>
+            <BarChart3 className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-primary mx-auto mb-1 md:mb-1.5 lg:mb-2" />
+            <p className="text-[10px] md:text-xs lg:text-sm font-medium">سجل الحضور</p>
           </Card>
         </div>
 
         {/* Month Stats */}
-        <Card className="p-6">
-          <h3 className="text-lg font-bold mb-4">إحصائيات الشهر</h3>
-          <div className="space-y-3">
+        <Card className="p-4 md:p-5 lg:p-6">
+          <h3 className="text-base md:text-lg font-bold mb-2 md:mb-3 lg:mb-4">إحصائيات الشهر</h3>
+          <div className="space-y-2 md:space-y-2.5 lg:space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">أيام الحضور</span>
-              <span className="font-bold text-lg">
+              <span className="font-bold text-sm md:text-base lg:text-lg">
                 {monthStats.present}/{monthStats.total} ({Math.round((monthStats.present / monthStats.total) * 100)}%)
               </span>
             </div>
-            <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+            <div className="w-full bg-muted rounded-full h-2 md:h-2.5 lg:h-3 overflow-hidden">
               <div
                 className="h-full bg-gradient-success"
                 style={{ width: `${(monthStats.present / monthStats.total) * 100}%` }}

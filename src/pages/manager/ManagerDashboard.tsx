@@ -352,9 +352,9 @@ const ManagerDashboard = () => {
         </div>
       </div>
 
-      <div className="px-4 -mt-4 space-y-4">
+      <div className="px-3 md:px-4 -mt-3 md:-mt-4 space-y-2 md:space-y-3 lg:space-y-4">
         {/* Active Method Selector */}
-        <Card className="p-4">
+        <Card className="p-2.5 md:p-3 lg:p-4">
           <label className="text-sm font-medium text-muted-foreground mb-2 block">
             طريقة التحضير النشطة:
           </label>
@@ -364,7 +364,7 @@ const ManagerDashboard = () => {
               setActiveMethod(e.target.value as "qr" | "color" | "code");
               setTimeLeft(e.target.value === "qr" ? 120 : e.target.value === "color" ? 20 : 300);
             }}
-            className="w-full h-12 px-4 rounded-lg border-2 border-primary/30 bg-background font-medium"
+            className="w-full h-10 md:h-11 lg:h-12 px-3 md:px-4 rounded-lg border-2 border-primary/30 bg-background font-medium"
           >
             <option value="qr">QR Code</option>
             <option value="color">اللون</option>
@@ -373,15 +373,15 @@ const ManagerDashboard = () => {
         </Card>
 
         {/* Code Display */}
-        <Card className="p-6 card-elevated">
+        <Card className="p-3 md:p-4 lg:p-5 card-elevated">
           {activeMethod === "qr" && (
             <div className="text-center">
-              <div className="inline-block p-4 bg-white rounded-2xl">
-                <QRCodeCanvas value={currentCode} size={250} />
+              <div className="inline-block p-2 md:p-3 lg:p-4 bg-white rounded-xl md:rounded-2xl">
+                <QRCodeCanvas value={currentCode} size={180} className="md:w-[220px] md:h-[220px] lg:w-[250px] lg:h-[250px]" />
               </div>
-              <div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground">
+              <div className="mt-2 md:mt-3 lg:mt-4 flex items-center justify-center gap-2 text-muted-foreground">
                 <Clock className="w-5 h-5" />
-                <span className="text-lg font-bold">
+                <span className="text-sm md:text-base lg:text-lg font-bold">
                   يتجدد خلال: {formatTime(timeLeft)}
                 </span>
               </div>
@@ -391,12 +391,12 @@ const ManagerDashboard = () => {
           {activeMethod === "color" && (
             <div className="text-center">
               <div className={`w-64 h-64 rounded-3xl ${colorMap[currentColor as keyof typeof colorMap].bg} mx-auto shadow-2xl`}></div>
-              <p className="text-2xl font-bold mt-4">
+              <p className="text-lg md:text-xl lg:text-2xl font-bold mt-2 md:mt-3 lg:mt-4">
                 اللون الحالي: {colorMap[currentColor as keyof typeof colorMap].name}
               </p>
-              <div className="mt-2 flex items-center justify-center gap-2 text-muted-foreground">
+              <div className="mt-1.5 md:mt-2 flex items-center justify-center gap-2 text-muted-foreground">
                 <Clock className="w-5 h-5" />
-                <span className="text-lg font-bold">
+                <span className="text-sm md:text-base lg:text-lg font-bold">
                   يتجدد خلال: {formatTime(timeLeft)}
                 </span>
               </div>
@@ -405,13 +405,13 @@ const ManagerDashboard = () => {
 
           {activeMethod === "code" && (
             <div className="text-center">
-              <p className="text-6xl font-bold tracking-widest text-primary mb-4">
+              <p className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-widest text-primary mb-2 md:mb-3 lg:mb-4">
                 {currentNumericCode}
               </p>
-              <p className="text-xl text-muted-foreground mb-4">الكود الرقمي</p>
+              <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-2 md:mb-3 lg:mb-4">الكود الرقمي</p>
               <div className="flex items-center justify-center gap-2 text-muted-foreground">
                 <Clock className="w-5 h-5" />
-                <span className="text-lg font-bold">
+                <span className="text-sm md:text-base lg:text-lg font-bold">
                   يتجدد خلال: {formatTime(timeLeft)}
                 </span>
               </div>
@@ -420,7 +420,7 @@ const ManagerDashboard = () => {
         </Card>
 
         {/* Quick Methods */}
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 md:gap-2">
           {["qr", "color", "code"].map((m) => (
             <Button
               key={m}
@@ -438,26 +438,26 @@ const ManagerDashboard = () => {
         </div>
 
         {/* Today Stats */}
-        <Card className="p-6">
-          <h3 className="text-lg font-bold mb-4">إحصائيات اليوم</h3>
-          <div className="grid grid-cols-4 gap-2 text-center">
+        <Card className="p-4 md:p-5 lg:p-6">
+          <h3 className="text-base md:text-lg font-bold mb-2 md:mb-3">إحصائيات اليوم</h3>
+          <div className="grid grid-cols-4 gap-1.5 md:gap-2 text-center">
             <div>
-              <p className="text-3xl font-bold text-success">{todayStats.present}</p>
-              <p className="text-xs text-muted-foreground mt-1">حاضر</p>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-success">{todayStats.present}</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 md:mt-1">حاضر</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-warning">{todayStats.late}</p>
-              <p className="text-xs text-muted-foreground mt-1">متأخر</p>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-warning">{todayStats.late}</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 md:mt-1">متأخر</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-danger">{todayStats.absent}</p>
-              <p className="text-xs text-muted-foreground mt-1">غائب</p>
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-danger">{todayStats.absent}</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 md:mt-1">غائب</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-primary">
+              <p className="text-xl md:text-2xl lg:text-3xl font-bold text-primary">
                 {Math.round((todayStats.present / todayStats.total) * 100)}%
               </p>
-              <p className="text-xs text-muted-foreground mt-1">النسبة</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 md:mt-1">النسبة</p>
             </div>
           </div>
         </Card>
@@ -465,13 +465,13 @@ const ManagerDashboard = () => {
         {/* Suspicious Requests Alert */}
         {suspiciousCount > 0 && (
           <Card
-            className="p-4 bg-warning/10 border-warning/30 cursor-pointer hover-scale"
+            className="p-3 md:p-4 bg-warning/10 border-warning/30 cursor-pointer hover:scale-[1.01] md:hover:scale-[1.02] transition-transform"
             onClick={() => navigate("/manager/verifications")}
           >
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="w-8 h-8 text-warning" />
+            <div className="flex items-center gap-2 md:gap-3">
+              <AlertTriangle className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-warning" />
               <div className="flex-1">
-                <p className="font-bold text-lg">⚠️ يحتاج تأكيدك ({suspiciousCount})</p>
+                <p className="font-bold text-sm md:text-base lg:text-lg">⚠️ يحتاج تأكيدك ({suspiciousCount})</p>
                 <p className="text-sm text-muted-foreground">اضغط للمراجعة</p>
               </div>
             </div>

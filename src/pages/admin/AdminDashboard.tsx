@@ -155,21 +155,21 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-6" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-3 md:p-6" dir="rtl">
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
+      <div className="max-w-7xl mx-auto mb-4 md:mb-6">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-purple-600 rounded-full">
-              <Shield className="w-8 h-8 text-white" />
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="p-2 md:p-3 bg-purple-600 rounded-full">
+              <Shield className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-gray-800">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800">
                 لوحة تحكم المدير العام
               </h1>
-              <p className="text-gray-600">مرحباً، {userName}</p>
+              <p className="text-sm md:text-base text-gray-600">مرحباً، {userName}</p>
               {locationInfo.company && (
-                <p className="text-gray-500 text-sm mt-1">
+                <p className="text-gray-500 text-xs md:text-sm mt-1">
                   🏢 {locationInfo.company.name}
                 </p>
               )}
@@ -178,125 +178,125 @@ const AdminDashboard = () => {
           <Button
             onClick={handleLogout}
             variant="outline"
-            className="gap-2"
+            className="gap-1 md:gap-2 text-sm md:text-base"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3 h-3 md:w-4 md:h-4" />
             تسجيل الخروج
           </Button>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-3 md:space-y-4 lg:space-y-6">
         {/* System Statistics */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">إحصائيات النظام</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">إحصائيات النظام</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+            <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">الشركات</p>
-                  <p className="text-3xl font-bold text-purple-600">
+                  <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">الشركات</p>
+                  <p className="text-xl md:text-2xl lg:text-3xl font-bold text-purple-600">
                     {loading ? "..." : stats.totalCompanies}
                   </p>
                 </div>
-                <div className="p-3 bg-purple-100 rounded-full">
-                  <Building2 className="w-8 h-8 text-purple-600" />
+                <div className="p-2 md:p-2.5 lg:p-3 bg-purple-100 rounded-full">
+                  <Building2 className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-purple-600" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+            <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">الفروع</p>
-                  <p className="text-3xl font-bold text-blue-600">
+                  <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">الفروع</p>
+                  <p className="text-xl md:text-2xl lg:text-3xl font-bold text-blue-600">
                     {loading ? "..." : stats.totalBranches}
                   </p>
                 </div>
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <GitBranch className="w-8 h-8 text-blue-600" />
+                <div className="p-2 md:p-2.5 lg:p-3 bg-blue-100 rounded-full">
+                  <GitBranch className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-blue-600" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+            <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">المواقع</p>
-                  <p className="text-3xl font-bold text-green-600">
+                  <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">المواقع</p>
+                  <p className="text-xl md:text-2xl lg:text-3xl font-bold text-green-600">
                     {loading ? "..." : stats.totalLocations}
                   </p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-full">
-                  <MapPin className="w-8 h-8 text-green-600" />
+                <div className="p-2 md:p-2.5 lg:p-3 bg-green-100 rounded-full">
+                  <MapPin className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-green-600" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+            <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">إجمالي المستخدمين</p>
-                  <p className="text-3xl font-bold text-indigo-600">
+                  <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">إجمالي المستخدمين</p>
+                  <p className="text-xl md:text-2xl lg:text-3xl font-bold text-indigo-600">
                     {loading ? "..." : stats.totalUsers}
                   </p>
                 </div>
-                <div className="p-3 bg-indigo-100 rounded-full">
-                  <Users className="w-8 h-8 text-indigo-600" />
+                <div className="p-2 md:p-2.5 lg:p-3 bg-indigo-100 rounded-full">
+                  <Users className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-indigo-600" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+            <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">الموظفين</p>
-                  <p className="text-3xl font-bold text-orange-600">
+                  <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">الموظفين</p>
+                  <p className="text-xl md:text-2xl lg:text-3xl font-bold text-orange-600">
                     {loading ? "..." : stats.totalEmployees}
                   </p>
                 </div>
-                <div className="p-3 bg-orange-100 rounded-full">
-                  <UserCog className="w-8 h-8 text-orange-600" />
+                <div className="p-2 md:p-2.5 lg:p-3 bg-orange-100 rounded-full">
+                  <UserCog className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-orange-600" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+            <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">الورديات</p>
-                  <p className="text-3xl font-bold text-teal-600">
+                  <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">الورديات</p>
+                  <p className="text-xl md:text-2xl lg:text-3xl font-bold text-teal-600">
                     {loading ? "..." : stats.totalShifts}
                   </p>
                 </div>
-                <div className="p-3 bg-teal-100 rounded-full">
-                  <Clock className="w-8 h-8 text-teal-600" />
+                <div className="p-2 md:p-2.5 lg:p-3 bg-teal-100 rounded-full">
+                  <Clock className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-teal-600" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 bg-white hover:shadow-lg transition-shadow">
+            <Card className="p-3 md:p-4 lg:p-5 bg-white hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">المستخدمين النشطين اليوم</p>
-                  <p className="text-3xl font-bold text-green-600">
+                  <p className="text-xs md:text-sm text-gray-600 mb-0.5 md:mb-1">المستخدمين النشطين اليوم</p>
+                  <p className="text-xl md:text-2xl lg:text-3xl font-bold text-green-600">
                     {loading ? "..." : stats.activeUsers}
                   </p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-full">
-                  <BarChart3 className="w-8 h-8 text-green-600" />
+                <div className="p-2 md:p-2.5 lg:p-3 bg-green-100 rounded-full">
+                  <BarChart3 className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 text-green-600" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 bg-gradient-to-br from-purple-600 to-pink-600 text-white hover:shadow-lg transition-shadow">
+            <Card className="p-3 md:p-4 lg:p-5 bg-gradient-to-br from-purple-600 to-pink-600 text-white hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-purple-100 mb-1">حالة النظام</p>
-                  <p className="text-2xl font-bold">نشط ✓</p>
+                  <p className="text-lg md:text-xl lg:text-2xl font-bold">نشط ✓</p>
                 </div>
-                <div className="p-3 bg-white/20 rounded-full">
-                  <Settings className="w-8 h-8 text-white" />
+                <div className="p-2 md:p-2.5 lg:p-3 bg-white/20 rounded-full">
+                  <Settings className="w-6 h-6 md:w-8 md:h-8 text-white" />
                 </div>
               </div>
             </Card>
@@ -305,81 +305,81 @@ const AdminDashboard = () => {
 
         {/* Management Actions */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">إدارة النظام</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">إدارة النظام</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
             <Card
               className="p-6 text-center hover:shadow-lg transition-all cursor-pointer hover:scale-105 border-2 border-purple-200"
               onClick={() => navigate("/admin/companies")}
             >
-              <Building2 className="w-16 h-16 text-purple-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">إدارة الشركات</h3>
-              <p className="text-sm text-gray-600">إضافة وتعديل وحذف الشركات</p>
+              <Building2 className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-purple-600 mx-auto mb-2 md:mb-3" />
+              <h3 className="text-base md:text-lg lg:text-xl font-semibold text-gray-800 mb-1 md:mb-2">إدارة الشركات</h3>
+              <p className="text-xs md:text-sm text-gray-600">إضافة وتعديل وحذف الشركات</p>
             </Card>
 
             <Card
               className="p-6 text-center hover:shadow-lg transition-all cursor-pointer hover:scale-105 border-2 border-blue-200"
               onClick={() => navigate("/admin/branches")}
             >
-              <GitBranch className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">إدارة الفروع</h3>
-              <p className="text-sm text-gray-600">إدارة فروع الشركات</p>
+              <GitBranch className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-blue-600 mx-auto mb-2 md:mb-3" />
+              <h3 className="text-base md:text-lg lg:text-xl font-semibold text-gray-800 mb-1 md:mb-2">إدارة الفروع</h3>
+              <p className="text-xs md:text-sm text-gray-600">إدارة فروع الشركات</p>
             </Card>
 
             <Card
               className="p-6 text-center hover:shadow-lg transition-all cursor-pointer hover:scale-105 border-2 border-green-200"
               onClick={() => navigate("/admin/locations")}
             >
-              <MapPin className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">إدارة المواقع</h3>
-              <p className="text-sm text-gray-600">تحديد المواقع الجغرافية والأنصبة</p>
+              <MapPin className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-green-600 mx-auto mb-2 md:mb-3" />
+              <h3 className="text-base md:text-lg lg:text-xl font-semibold text-gray-800 mb-1 md:mb-2">إدارة المواقع</h3>
+              <p className="text-xs md:text-sm text-gray-600">تحديد المواقع الجغرافية والأنصبة</p>
             </Card>
 
             <Card
               className="p-6 text-center hover:shadow-lg transition-all cursor-pointer hover:scale-105 border-2 border-teal-200"
               onClick={() => navigate("/admin/shifts")}
             >
-              <Clock className="w-16 h-16 text-teal-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">إدارة الورديات</h3>
-              <p className="text-sm text-gray-600">تحديد أوقات العمل والورديات</p>
+              <Clock className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-teal-600 mx-auto mb-2 md:mb-3" />
+              <h3 className="text-base md:text-lg lg:text-xl font-semibold text-gray-800 mb-1 md:mb-2">إدارة الورديات</h3>
+              <p className="text-xs md:text-sm text-gray-600">تحديد أوقات العمل والورديات</p>
             </Card>
 
             <Card
               className="p-6 text-center hover:shadow-lg transition-all cursor-pointer hover:scale-105 border-2 border-indigo-200"
               onClick={() => navigate("/admin/users")}
             >
-              <Users className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">إدارة المستخدمين</h3>
-              <p className="text-sm text-gray-600">إدارة المستخدمين والصلاحيات</p>
+              <Users className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-indigo-600 mx-auto mb-2 md:mb-3" />
+              <h3 className="text-base md:text-lg lg:text-xl font-semibold text-gray-800 mb-1 md:mb-2">إدارة المستخدمين</h3>
+              <p className="text-xs md:text-sm text-gray-600">إدارة المستخدمين والصلاحيات</p>
             </Card>
 
             <Card
               className="p-6 text-center hover:shadow-lg transition-all cursor-pointer hover:scale-105 border-2 border-orange-200"
               onClick={() => navigate("/admin/settings")}
             >
-              <Settings className="w-16 h-16 text-orange-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">إعدادات النظام</h3>
-              <p className="text-sm text-gray-600">تخصيص إعدادات النظام العامة</p>
+              <Settings className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-orange-600 mx-auto mb-2 md:mb-3" />
+              <h3 className="text-base md:text-lg lg:text-xl font-semibold text-gray-800 mb-1 md:mb-2">إعدادات النظام</h3>
+              <p className="text-xs md:text-sm text-gray-600">تخصيص إعدادات النظام العامة</p>
             </Card>
           </div>
         </div>
 
         {/* Charts Section */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">التحليلات والرسوم البيانية</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">التحليلات والرسوم البيانية</h2>
           <AdminCharts />
         </div>
 
         {/* Quick Stats Summary */}
-        <Card className="p-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+        <Card className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold mb-2">ملخص سريع</h3>
-              <p className="text-purple-100">
+              <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-1 md:mb-2">ملخص سريع</h3>
+              <p className="text-sm md:text-base text-purple-100">
                 النظام يدير {stats.totalCompanies} شركة بإجمالي {stats.totalEmployees} موظف
                 عبر {stats.totalLocations} موقع
               </p>
             </div>
-            <BarChart3 className="w-16 h-16 text-white/80" />
+            <BarChart3 className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 text-white/80" />
           </div>
         </Card>
       </div>
