@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { getSession } from "@/lib/auth";
 
 interface AttendanceRecord {
   id: string;
@@ -61,22 +62,18 @@ const AttendanceHistory = () => {
   }, [selectedMonth]);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    // Check for local session first
+    const session = getSession();
+
     if (!session) {
       navigate("/login");
       return;
     }
 
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", session.user.id)
-      .single();
-
-    if (userData?.role !== "employee") {
+    // Check if user has employee role
+    if (session.role !== "employee") {
       toast.error("غير مصرح لك بالدخول");
-      navigate("/login");
+      navigate("/employee/dashboard");
       return;
     }
 
@@ -86,8 +83,8 @@ const AttendanceHistory = () => {
   const loadAttendance = async () => {
     try {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const session = getSession();
+      if (!session) return;
 
       const monthStart = startOfMonth(selectedMonth);
       const monthEnd = endOfMonth(selectedMonth);
@@ -98,7 +95,7 @@ const AttendanceHistory = () => {
           *,
           locations (name)
         `)
-        .eq("employee_id", user.id)
+        .eq("employee_id", session.userId)
         .gte("check_in", monthStart.toISOString())
         .lte("check_in", monthEnd.toISOString())
         .order("check_in", { ascending: false });

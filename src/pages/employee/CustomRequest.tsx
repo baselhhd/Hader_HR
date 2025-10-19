@@ -44,7 +44,7 @@ const CustomRequest = () => {
       const { data, error } = await supabase
         .from("custom_requests")
         .select("*")
-        .eq("employee_id", session.id)
+        .eq("employee_id", session.userId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -75,7 +75,7 @@ const CustomRequest = () => {
 
     try {
       const { error } = await supabase.from("custom_requests").insert({
-        employee_id: session.id,
+        employee_id: session.userId,
         title: title.trim(),
         description: description.trim(),
         status: "pending",

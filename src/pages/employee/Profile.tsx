@@ -17,6 +17,7 @@ import {
   updateUserEmail,
   updateUserPhone
 } from "@/utils/authHelpers";
+import { getSession } from "@/lib/auth";
 import { useUserLocationInfo } from "@/hooks/useUserLocationInfo";
 import { UserLocationDisplay } from "@/components/UserLocationDisplay";
 
@@ -62,16 +63,24 @@ const Profile = () => {
 
   const loadProfile = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      // Check for local session first
+      const session = getSession();
+      if (!session) {
         navigate("/login");
+        return;
+      }
+
+      // Check if user has employee role
+      if (session.role !== "employee") {
+        toast.error("غير مصرح لك بالدخول");
+        navigate("/employee/dashboard");
         return;
       }
 
       const { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("id", user.id)
+        .eq("id", session.userId)
         .single();
 
       if (error) throw error;

@@ -15,6 +15,7 @@ import { format, differenceInDays } from "date-fns";
 import { ar } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
+import { getSession } from "@/lib/auth";
 
 const leaveSchema = z.object({
   leave_type: z.enum(["annual", "sick", "personal", "emergency", "unpaid"], {
@@ -71,26 +72,22 @@ const LeaveRequest = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    // Check for local session first
+    const session = getSession();
+
     if (!session) {
       navigate("/login");
       return;
     }
 
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", session.user.id)
-      .single();
-
-    if (userData?.role !== "employee") {
+    // Check if user has employee role
+    if (session.role !== "employee") {
       toast.error("غير مصرح لك بالدخول");
-      navigate("/login");
+      navigate("/employee/dashboard");
       return;
     }
 
-    await loadData(session.user.id);
+    await loadData(session.userId);
   };
 
   const loadData = async (userId: string) => {
