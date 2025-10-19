@@ -573,17 +573,32 @@ const CheckIn = () => {
                       </div>
                     )}
 
-                    {/* Distance */}
-                    {gpsDistance !== null && (
-                      <div className="p-3 bg-gray-50 rounded-lg">
+                    {/* Range Status - حالة النطاق */}
+                    {gpsDistance !== null && location && (
+                      <div
+                        className={`p-3 rounded-lg ${
+                          gpsDistance <= location.gps_radius
+                            ? 'bg-green-50'
+                            : 'bg-orange-50'
+                        }`}
+                      >
                         <div className="flex items-center gap-2 mb-1">
-                          <MapPin className="w-3.5 h-3.5 text-gray-600" />
-                          <p className="text-xs text-gray-600">المسافة</p>
+                          {gpsDistance <= location.gps_radius ? (
+                            <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+                          ) : (
+                            <AlertTriangle className="w-3.5 h-3.5 text-orange-600" />
+                          )}
+                          <p className="text-xs text-gray-600">الحالة</p>
                         </div>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {gpsDistance < 1000
-                            ? `${Math.round(gpsDistance)} م`
-                            : `${(gpsDistance / 1000).toFixed(1)} كم`}
+                        <p className={`text-sm font-semibold ${
+                          gpsDistance <= location.gps_radius
+                            ? 'text-green-900'
+                            : 'text-orange-900'
+                        }`}>
+                          {gpsDistance <= location.gps_radius
+                            ? `متبقي ${Math.round(location.gps_radius - gpsDistance)} م`
+                            : `تحتاج ${Math.round(gpsDistance - location.gps_radius)} م`
+                          }
                         </p>
                       </div>
                     )}
