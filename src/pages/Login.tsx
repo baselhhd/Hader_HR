@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Clock, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { saveSession } from "@/lib/auth";
+import { Logo } from "@/components/Logo";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -106,11 +107,11 @@ const Login = () => {
       <div className="w-full max-w-md animate-scale-in">
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-4">
-            <Clock className="w-12 h-12 text-primary" />
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-3xl shadow-2xl mb-6 p-4">
+            <Logo size="lg" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">حاضر</h1>
-          <p className="text-white/90">نظام إدارة الحضور الذكي</p>
+          <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">حاضر</h1>
+          <p className="text-white/90 text-lg">نظام إدارة الحضور الذكي</p>
         </div>
 
         {/* Login Card */}

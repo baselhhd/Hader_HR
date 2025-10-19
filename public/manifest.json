@@ -1,0 +1,32 @@
+{
+  "name": "حاضر - نظام إدارة الحضور الذكي",
+  "short_name": "حاضر",
+  "description": "نظام حضور وانصراف ذكي بدون أجهزة - يعمل من أي متصفح",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#FBBF24",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "ar",
+  "dir": "rtl"
+}
