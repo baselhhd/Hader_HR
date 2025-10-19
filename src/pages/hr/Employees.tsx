@@ -16,11 +16,10 @@ import { ArrowLeft, Search, UserPlus, Mail, Phone, Edit } from "lucide-react";
 import { toast } from "sonner";
 
 interface Employee {
-  id: string;
+  user_id: string; // This is the PRIMARY KEY in employees table
   employee_number: string;
   department: string;
   position: string;
-  user_id: string;
   users: {
     username: string;
     full_name: string;
@@ -63,11 +62,10 @@ const Employees = () => {
       const { data, error } = await supabase
         .from("employees")
         .select(`
-          id,
+          user_id,
           employee_number,
           department,
           position,
-          user_id,
           users (
             username,
             full_name,
@@ -183,7 +181,7 @@ const Employees = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredEmployees.map((employee) => (
-                    <TableRow key={employee.id}>
+                    <TableRow key={employee.user_id}>
                       <TableCell className="font-medium">
                         {employee.employee_number}
                       </TableCell>
