@@ -123,7 +123,7 @@ const CustomRequests = () => {
         .update({
           status: action === "approve" ? "approved" : "rejected",
           response: responseText.trim(),
-          reviewed_by: session.id,
+          reviewed_by: session.userId,
           reviewed_at: new Date().toISOString(),
         })
         .eq("id", selectedRequest.id);

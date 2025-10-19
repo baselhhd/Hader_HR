@@ -72,31 +72,17 @@ const AdminDashboard = () => {
         navigate("/login");
         return;
       }
+      // Check if user is super_admin
+      if (session.role !== "admin") {
+        toast.error("غير مصرح لك بالدخول لهذه الصفحة");
+        navigate("/login");
+        return;
+      }
       setUserId(session.userId);
       setUserRole(session.role);
       setUserName(session.fullName || session.username);
-      return;
-    }
-
-    // Fallback to Supabase Auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: userData } = await supabase
-        .from("users")
-        .select("username, full_name, role")
-        .eq("id", user.id)
-        .single();
-
-      if (userData) {
-        // Check if user is super_admin
-        if (userData.role !== "super_admin") {
-          toast.error("غير مصرح لك بالدخول لهذه الصفحة");
-          navigate("/login");
-          return;
-        }
-        setUserId(user.id);
-        setUserRole(userData.role || "");
-        setUserName(userData.full_name || userData.username);
+    } else {
+      navigate("/login");
       }
     }
   };

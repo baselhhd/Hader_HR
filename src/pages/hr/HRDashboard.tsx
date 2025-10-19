@@ -60,23 +60,8 @@ const HRDashboard = () => {
       setUserId(session.userId);
       setUserRole(session.role);
       setUserName(session.fullName || session.username);
-      return;
-    }
-
-    // Fallback to Supabase Auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: userData } = await supabase
-        .from("users")
-        .select("username, full_name, role")
-        .eq("id", user.id)
-        .single();
-
-      if (userData) {
-        setUserId(user.id);
-        setUserRole(userData.role || "");
-        setUserName(userData.full_name || userData.username);
-      }
+    } else {
+      navigate("/login");
     }
   };
 

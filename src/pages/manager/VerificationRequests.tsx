@@ -10,6 +10,7 @@ import { ArrowRight, CheckCircle, XCircle, AlertTriangle, MapPin, Clock, User } 
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
+import { getSession } from "@/lib/auth";
 
 interface SuspiciousReason {
   type: string;
@@ -72,26 +73,20 @@ const VerificationRequests = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    const session = getSession();
+
     if (!session) {
       navigate("/login");
       return;
     }
 
-    const { data: userData } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", session.user.id)
-      .single();
-
-    if (userData?.role !== "loc_manager") {
+    if (session.role !== "manager") {
       toast.error("غير مصرح لك بالدخول");
-      navigate("/login");
+      navigate("/manager/dashboard");
       return;
     }
 
-    await loadRequests(session.user.id);
+    await loadRequests(session.userId);
   };
 
   const loadRequests = async (userId: string) => {
@@ -171,8 +166,11 @@ const VerificationRequests = () => {
 
     setProcessing(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      const session = getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
 
       // Update verification request
       const { error: vrError } = await supabase
@@ -181,7 +179,7 @@ const VerificationRequests = () => {
           status: actionType === "approve" ? "approved" : "rejected",
           resolved_at: new Date().toISOString(),
           resolution_notes: notes || null,
-          manager_id: session.user.id,
+          manager_id: session.userId,
         })
         .eq("id", selectedRequest.id);
 
@@ -193,7 +191,7 @@ const VerificationRequests = () => {
           .from("attendance_records")
           .update({
             status: "approved",
-            verified_by: session.user.id,
+            verified_by: session.userId,
             verified_at: new Date().toISOString(),
             notes: notes || null,
           })
@@ -215,9 +213,9 @@ const VerificationRequests = () => {
       }
 
       // Reload requests
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      const currentSession = getSession();
       if (currentSession) {
-        await loadRequests(currentSession.user.id);
+        await loadRequests(currentSession.userId);
       }
 
       // Close dialog

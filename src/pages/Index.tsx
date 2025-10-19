@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { getSession } from "@/lib/auth";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -8,23 +8,17 @@ const Index = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session) {
-          // TODO: Simple role check for initial phase - will enhance security before production
-          const { data: userData } = await supabase
-            .from("users")
-            .select("role")
-            .eq("id", session.user.id)
-            .single();
+        const session = getSession();
 
-          if (userData?.role === "employee") {
+        if (session) {
+          // Route based on role from localStorage session
+          if (session.role === "employee") {
             navigate("/employee/dashboard", { replace: true });
-          } else if (userData?.role === "loc_manager") {
+          } else if (session.role === "manager") {
             navigate("/manager/dashboard", { replace: true });
-          } else if (userData?.role === "hr_admin") {
+          } else if (session.role === "hr") {
             navigate("/hr/dashboard", { replace: true });
-          } else if (userData?.role === "super_admin") {
+          } else if (session.role === "admin") {
             navigate("/admin/dashboard", { replace: true });
           } else {
             navigate("/login", { replace: true });

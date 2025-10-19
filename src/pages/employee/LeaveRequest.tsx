@@ -150,8 +150,11 @@ const LeaveRequest = () => {
       setErrors({});
       setSubmitting(true);
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const session = getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
 
       const days = calculateDays();
 
@@ -170,7 +173,7 @@ const LeaveRequest = () => {
 
       // Submit request
       const { error } = await supabase.from("leave_requests").insert({
-        employee_id: user.id,
+        employee_id: session.userId,
         leave_type: leaveType as "annual" | "sick" | "personal" | "emergency" | "unpaid",
         start_date: format(startDate!, "yyyy-MM-dd"),
         end_date: format(endDate!, "yyyy-MM-dd"),

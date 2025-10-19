@@ -78,7 +78,7 @@ const AddEmployee = () => {
       const { data, error } = await supabase
         .from("users")
         .select("company_id, branch_id")
-        .eq("id", session.id)
+        .eq("id", session.userId)
         .single();
 
       if (error) {
