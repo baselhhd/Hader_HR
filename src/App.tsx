@@ -9,14 +9,18 @@ import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
 import CheckIn from "./pages/employee/CheckIn";
 import AttendanceHistory from "./pages/employee/AttendanceHistory";
 import LeaveRequest from "./pages/employee/LeaveRequest";
+import CustomRequest from "./pages/employee/CustomRequest";
 import Profile from "./pages/employee/Profile";
 import ManagerDashboard from "./pages/manager/ManagerDashboard";
 import VerificationRequests from "./pages/manager/VerificationRequests";
 import HRDashboard from "./pages/hr/HRDashboard";
 import Employees from "./pages/hr/Employees";
+import AddEmployee from "./pages/hr/AddEmployee";
+import CustomRequests from "./pages/hr/CustomRequests";
 import LeaveRequests from "./pages/hr/LeaveRequests";
 import Reports from "./pages/hr/Reports";
 import Attendance from "./pages/hr/Attendance";
+import ForgotPassword from "./pages/ForgotPassword";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Companies from "./pages/admin/Companies";
 import Branches from "./pages/admin/Branches";
@@ -43,15 +47,20 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
           <Route path="/employee/check-in" element={<CheckIn />} />
           <Route path="/employee/attendance" element={<AttendanceHistory />} />
           <Route path="/employee/leave-request" element={<LeaveRequest />} />
+          <Route path="/employee/custom-request" element={<CustomRequest />} />
           <Route path="/employee/profile" element={<Profile />} />
           <Route path="/manager/dashboard" element={<ManagerDashboard />} />
           <Route path="/manager/verifications" element={<VerificationRequests />} />
           <Route path="/hr/dashboard" element={<HRDashboard />} />
           <Route path="/hr/employees" element={<Employees />} />
+          <Route path="/hr/employees/add" element={<AddEmployee />} />
+          <Route path="/hr/employees/:id/edit" element={<AddEmployee />} />
+          <Route path="/hr/custom-requests" element={<CustomRequests />} />
           <Route path="/hr/requests" element={<LeaveRequests />} />
           <Route path="/hr/reports" element={<Reports />} />
           <Route path="/hr/attendance" element={<Attendance />} />

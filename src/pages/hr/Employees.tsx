@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Search, UserPlus, Mail, Phone } from "lucide-react";
+import { ArrowLeft, Search, UserPlus, Mail, Phone, Edit } from "lucide-react";
 import { toast } from "sonner";
 
 interface Employee {
@@ -124,7 +124,10 @@ const Employees = () => {
               className="pr-10"
             />
           </div>
-          <Button className="gap-2">
+          <Button
+            onClick={() => navigate("/hr/employees/add")}
+            className="gap-2 bg-green-600 hover:bg-green-700"
+          >
             <UserPlus className="w-4 h-4" />
             إضافة موظف جديد
           </Button>
@@ -209,13 +212,16 @@ const Employees = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => toast.info("قريباً: عرض تفاصيل الموظف")}
-                        >
-                          عرض التفاصيل
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate(`/hr/employees/${employee.user_id}/edit`)}
+                          >
+                            <Edit className="w-4 h-4 ml-1" />
+                            تعديل
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

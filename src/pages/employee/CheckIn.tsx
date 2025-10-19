@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, QrCode, Palette, Hash, MapPin, CheckCircle, Clock, LogOut } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, QrCode, Palette, Hash, MapPin, CheckCircle, Clock, LogOut, ExternalLink, AlertTriangle, Target, Radio } from "lucide-react";
 import { toast } from "sonner";
 import QRScanner from "@/components/attendance/QRScanner";
 import ColorSelector from "@/components/attendance/ColorSelector";
@@ -69,6 +70,10 @@ const CheckIn = () => {
   const [pageMode, setPageMode] = useState<PageMode>("checkin");
   const [todayAttendance, setTodayAttendance] = useState<AttendanceData | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+  const [gpsTimestamp, setGpsTimestamp] = useState<number | null>(null);
+  const [gpsDistance, setGpsDistance] = useState<number | null>(null);
+  const [isGPSLoading, setIsGPSLoading] = useState(true);
 
   // Update location when hook data is available
   useEffect(() => {
@@ -110,6 +115,8 @@ const CheckIn = () => {
   };
 
   const getCurrentLocation = () => {
+    setIsGPSLoading(true);
+
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -118,10 +125,29 @@ const CheckIn = () => {
             lng: position.coords.longitude,
           };
           setUserLocation(coords);
-          checkIfInRange(coords);
+          setGpsAccuracy(position.coords.accuracy);
+          setGpsTimestamp(position.timestamp);
+
+          // Calculate distance if location is available
+          if (location) {
+            const dist = calculateDistance(
+              coords.lat,
+              coords.lng,
+              location.lat,
+              location.lng
+            );
+            setGpsDistance(dist);
+            setIsInRange(dist <= location.gps_radius);
+          } else {
+            checkIfInRange(coords);
+          }
+
+          setIsGPSLoading(false);
         },
         (error) => {
           console.warn("GPS not available:", error.message);
+          setIsGPSLoading(false);
+
           // For development: Allow check-in without GPS
           // In production with HTTPS, GPS will work properly
           toast.warning("سيتم تسجيل الحضور بدون GPS (للتطوير فقط)", {
@@ -133,6 +159,7 @@ const CheckIn = () => {
       );
     } else {
       // GPS not supported
+      setIsGPSLoading(false);
       toast.warning("GPS غير مدعوم في هذا المتصفح");
       setIsInRange(true); // Allow check-in anyway
     }
@@ -164,6 +191,25 @@ const CheckIn = () => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return R * c;
+  };
+
+  const getLocationSource = (accuracy: number): string => {
+    if (accuracy <= 20) return "GPS";
+    if (accuracy <= 100) return "WiFi + GPS";
+    if (accuracy <= 500) return "WiFi";
+    return "IP Address";
+  };
+
+  const getGoogleMapsUrl = (lat: number, lng: number): string => {
+    return `https://www.google.com/maps?q=${lat},${lng}`;
+  };
+
+  const formatTime = (timestamp: number): string => {
+    return new Date(timestamp).toLocaleTimeString("ar-SA", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
   };
 
   const handleMethodSelect = (selectedMethod: "qr" | "color" | "code") => {
@@ -450,11 +496,132 @@ const CheckIn = () => {
             </div>
           </Card>
 
-          <Card className="p-4 bg-primary/5 border-primary/20">
-            <p className="text-sm text-center text-muted-foreground flex items-center justify-center gap-2">
-              <MapPin className="w-4 h-4" />
-              <span>💡 GPS سيتم تسجيله تلقائياً</span>
-            </p>
+          {/* GPS Info Card */}
+          <Card className="overflow-hidden">
+            <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-semibold text-gray-900">معلومات الموقع</h3>
+                </div>
+                {isGPSLoading ? (
+                  <Badge className="bg-gray-100 text-gray-700">
+                    <Clock className="w-3 h-3 ml-1 animate-spin" />
+                    جارٍ التحميل...
+                  </Badge>
+                ) : userLocation && gpsDistance !== null ? (
+                  isInRange ? (
+                    <Badge className="bg-green-100 text-green-700">
+                      <CheckCircle className="w-3 h-3 ml-1" />
+                      داخل النطاق
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-orange-100 text-orange-700">
+                      <AlertTriangle className="w-3 h-3 ml-1" />
+                      خارج النطاق
+                    </Badge>
+                  )
+                ) : (
+                  <Badge className="bg-gray-100 text-gray-700">
+                    غير متاح
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            <div className="p-4 space-y-3">
+              {isGPSLoading ? (
+                <div className="text-center py-4 text-gray-500 text-sm">
+                  <Clock className="w-8 h-8 mx-auto mb-2 animate-spin text-gray-400" />
+                  جارٍ تحديد موقعك...
+                </div>
+              ) : userLocation ? (
+                <>
+                  {/* Clickable Coordinates */}
+                  <a
+                    href={getGoogleMapsUrl(userLocation.lat, userLocation.lng)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Target className="w-4 h-4 text-blue-600" />
+                      <div className="text-sm">
+                        <p className="font-medium text-gray-900">الإحداثيات</p>
+                        <p className="text-xs text-gray-600 font-mono direction-ltr text-left">
+                          {userLocation.lat.toFixed(6)}, {userLocation.lng.toFixed(6)}
+                        </p>
+                      </div>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-blue-600 group-hover:translate-x-[-2px] transition-transform" />
+                  </a>
+
+                  {/* Details Grid */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Accuracy */}
+                    {gpsAccuracy !== null && (
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Target className="w-3.5 h-3.5 text-gray-600" />
+                          <p className="text-xs text-gray-600">الدقة</p>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {gpsAccuracy < 1000
+                            ? `${Math.round(gpsAccuracy)} م`
+                            : `${(gpsAccuracy / 1000).toFixed(1)} كم`}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Distance */}
+                    {gpsDistance !== null && (
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2 mb-1">
+                          <MapPin className="w-3.5 h-3.5 text-gray-600" />
+                          <p className="text-xs text-gray-600">المسافة</p>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {gpsDistance < 1000
+                            ? `${Math.round(gpsDistance)} م`
+                            : `${(gpsDistance / 1000).toFixed(1)} كم`}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Source */}
+                    {gpsAccuracy !== null && (
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Radio className="w-3.5 h-3.5 text-gray-600" />
+                          <p className="text-xs text-gray-600">المصدر</p>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {getLocationSource(gpsAccuracy)}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Timestamp */}
+                    {gpsTimestamp !== null && (
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Clock className="w-3.5 h-3.5 text-gray-600" />
+                          <p className="text-xs text-gray-600">الوقت</p>
+                        </div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {formatTime(gpsTimestamp)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-4 text-gray-500 text-sm">
+                  <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                  لم يتم تحديد الموقع
+                </div>
+              )}
+            </div>
           </Card>
         </div>
       </div>

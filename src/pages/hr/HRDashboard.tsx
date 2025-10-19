@@ -12,7 +12,8 @@ import {
   UserX,
   Calendar,
   BarChart3,
-  LogOut
+  LogOut,
+  MessageSquare
 } from "lucide-react";
 import { toast } from "sonner";
 import { AttendanceChart } from "@/components/AttendanceChart";
@@ -258,6 +259,15 @@ const HRDashboard = () => {
               <FileText className="w-12 h-12 text-orange-600 mx-auto mb-3" />
               <h3 className="font-semibold text-gray-800 mb-1">طلبات الإجازات</h3>
               <p className="text-sm text-gray-600">مراجعة والموافقة على الطلبات</p>
+            </Card>
+
+            <Card
+              className="p-6 text-center hover:shadow-lg transition-all cursor-pointer hover:scale-105"
+              onClick={() => navigate("/hr/custom-requests")}
+            >
+              <MessageSquare className="w-12 h-12 text-pink-600 mx-auto mb-3" />
+              <h3 className="font-semibold text-gray-800 mb-1">الطلبات الخاصة</h3>
+              <p className="text-sm text-gray-600">مراجعة طلبات الموظفين الخاصة</p>
             </Card>
 
             <Card
