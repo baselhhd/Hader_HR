@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -90,7 +90,6 @@ const CheckIn = () => {
 
   useEffect(() => {
     checkTodayAttendance();
-    getCurrentLocation();
   }, []);
 
   const checkTodayAttendance = async () => {
@@ -114,7 +113,7 @@ const CheckIn = () => {
     }
   };
 
-  const getCurrentLocation = () => {
+  const getCurrentLocation = useCallback(() => {
     setIsGPSLoading(true);
 
     if ("geolocation" in navigator) {
@@ -138,8 +137,6 @@ const CheckIn = () => {
             );
             setGpsDistance(dist);
             setIsInRange(dist <= location.gps_radius);
-          } else {
-            checkIfInRange(coords);
           }
 
           setIsGPSLoading(false);
@@ -163,7 +160,14 @@ const CheckIn = () => {
       toast.warning("GPS غير مدعوم في هذا المتصفح");
       setIsInRange(true); // Allow check-in anyway
     }
-  };
+  }, [location]);
+
+  // Get GPS location after location data is loaded
+  useEffect(() => {
+    if (location) {
+      getCurrentLocation();
+    }
+  }, [location, getCurrentLocation]);
 
   const checkIfInRange = (coords: { lat: number; lng: number }) => {
     if (!location) return;
@@ -175,6 +179,7 @@ const CheckIn = () => {
       location.lng
     );
 
+    setGpsDistance(distance);
     setIsInRange(distance <= location.gps_radius);
   };
 
